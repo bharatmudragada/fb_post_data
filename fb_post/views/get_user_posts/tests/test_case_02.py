@@ -27,9 +27,9 @@ TEST_CASE = {
 }
 
 
-class TestCase01GetUserPostsAPITestCase(CustomAPITestCase):
+class TestCase02GetUserPostsAPITestCase(CustomAPITestCase):
     def __init__(self, *args, **kwargs):
-        super(TestCase01GetUserPostsAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
+        super(TestCase02GetUserPostsAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
 
     def setupUser(self, username, password):
         pass
@@ -42,12 +42,12 @@ class TestCase01GetUserPostsAPITestCase(CustomAPITestCase):
         self.setup_user_data()
         self.post_1 = Post.objects.create(user=self.foo_user, postBody="This is first post")
         self.post_2 = Post.objects.create(user=self.foo_user, postBody="This is second post")
-        self.post_3 = Post.objects.create(user=self.foo_user, postBody="This is third post")
+        self.post_3 = Post.objects.create(user=self.user_2, postBody="This is third post")
 
     def test_case(self):
         self.setup_data()
 
-        super(TestCase01GetUserPostsAPITestCase, self).test_case()
+        super(TestCase02GetUserPostsAPITestCase, self).test_case()
 
     def compareResponse(self, response, test_case_response_dict):
 
@@ -58,7 +58,5 @@ class TestCase01GetUserPostsAPITestCase(CustomAPITestCase):
         for post in posts:
             post_ids.append(post["post_id"])
 
-        assert self.post_1.id in post_ids
-        assert self.post_2.id in post_ids
-        assert self.post_3.id in post_ids
+        assert self.post_3.id not in post_ids
         assert response.status_code == 201
