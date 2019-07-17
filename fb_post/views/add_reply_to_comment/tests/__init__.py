@@ -6,7 +6,9 @@ REQUEST_METHOD = "post"
 URL_SUFFIX = "post/{post_id}/comment/{comment_id}/reply/"
 
 from .test_case_01 import TestCase01AddReplyToCommentAPITestCase
+from .test_case_02 import TestCase02AddReplyToCommentAPITestCase
 
 __all__ = [
-    "TestCase01AddReplyToCommentAPITestCase"
+    "TestCase01AddReplyToCommentAPITestCase",
+    "TestCase02AddReplyToCommentAPITestCase"
 ]

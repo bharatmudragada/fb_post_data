@@ -1,8 +1,8 @@
 """
 # TODO: Update test case description
 """
+from django_swagger_utils.drf_server.utils.server_gen.custom_api_test_case import CustomAPITestCase
 
-from django_swagger_utils.utils.test import CustomAPITestCase
 from . import APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX
 
 REQUEST_BODY = """

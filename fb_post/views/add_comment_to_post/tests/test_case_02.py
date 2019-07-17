@@ -14,7 +14,7 @@ REQUEST_BODY = """
 
 RESPONSE_BODY = """
 {
-    "comment_id": 1
+    "comment_id": 4
 }
 """
 
@@ -34,10 +34,10 @@ TEST_CASE = {
 }
 
 
-class TestCase01AddCommentToPostAPITestCase(CustomAPITestCase):
+class TestCase02AddCommentToPostAPITestCase(CustomAPITestCase):
 
     def __init__(self, *args, **kwargs):
-        super(TestCase01AddCommentToPostAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
+        super(TestCase02AddCommentToPostAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
 
     def setupUser(self, username, password):
         pass
@@ -45,15 +45,18 @@ class TestCase01AddCommentToPostAPITestCase(CustomAPITestCase):
     def setup_data(self):
         self.foo_user = self._create_user('username', 'password')
         self.post = Post.objects.create(user=self.foo_user, postBody="This is comment post")
+        Comment.objects.create(post=self.post, commented_on=None, user=self.foo_user, commentText="This is first comment")
+        Comment.objects.create(post=self.post, commented_on=None, user=self.foo_user, commentText="This is second comment")
+        Comment.objects.create(post=self.post, commented_on=None, user=self.foo_user, commentText="This is third comment")
 
     def test_case(self):
         self.setup_data()
         TEST_CASE["request"]["path_params"]["post_id"] = self.post.id
         self.count_before_insertion = Comment.objects.filter(post=self.post).count()
-        super(TestCase01AddCommentToPostAPITestCase, self).test_case()
+        super(TestCase02AddCommentToPostAPITestCase, self).test_case()
 
     def compareResponse(self, response, test_case_response_dict):
-        super(TestCase01AddCommentToPostAPITestCase, self).compareResponse(response, test_case_response_dict)
+        super(TestCase02AddCommentToPostAPITestCase, self).compareResponse(response, test_case_response_dict)
 
         import json
         response_data = json.loads(response.content)

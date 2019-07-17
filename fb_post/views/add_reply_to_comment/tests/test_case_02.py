@@ -1,5 +1,5 @@
 """
-# Reply to comment
+# Reply to reply is also a reply to comment
 """
 from django_swagger_utils.drf_server.utils.server_gen.custom_api_test_case import CustomAPITestCase
 
@@ -8,13 +8,13 @@ from fb_post.models import Post, Comment
 
 REQUEST_BODY = """
 {
-    "comment_text": "This is reply"
+    "comment_text": "This is reply to reply"
 }
 """
 
 RESPONSE_BODY = """
 {
-    "reply_comment_id": 2
+    "reply_comment_id": 3
 }
 """
 
@@ -34,10 +34,10 @@ TEST_CASE = {
 }
 
 
-class TestCase01AddReplyToCommentAPITestCase(CustomAPITestCase):
+class TestCase02AddReplyToCommentAPITestCase(CustomAPITestCase):
 
     def __init__(self, *args, **kwargs):
-        super(TestCase01AddReplyToCommentAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
+        super(TestCase02AddReplyToCommentAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
 
     def setupUser(self, username, password):
         pass
@@ -46,25 +46,26 @@ class TestCase01AddReplyToCommentAPITestCase(CustomAPITestCase):
         self.foo_user = self._create_user("username", "password")
         self.post = Post.objects.create(user=self.foo_user, postBody="This is a post")
         self.comment = Comment.objects.create(post=self.post, commented_on=None, user=self.foo_user, commentText="This is a comment")
+        self.reply = Comment.objects.create(post=self.post, commented_on=self.comment, user=self.foo_user, commentText="This is a reply")
 
     def test_case(self):
         self.setup_data()
         TEST_CASE["request"]["path_params"]["post_id"] = self.post.id
-        TEST_CASE["request"]["path_params"]["comment_id"] = self.comment.id
-        super(TestCase01AddReplyToCommentAPITestCase, self).test_case()
+        TEST_CASE["request"]["path_params"]["comment_id"] = self.reply.id
+        super(TestCase02AddReplyToCommentAPITestCase, self).test_case()
 
     def compareResponse(self, response, test_case_response_dict):
-        super(TestCase01AddReplyToCommentAPITestCase, self).compareResponse(response, test_case_response_dict)
+        super(TestCase02AddReplyToCommentAPITestCase, self).compareResponse(response, test_case_response_dict)
 
         import json
         response_data = json.loads(response.content)
 
-        reply_id = response_data["reply_comment_id"]
+        reply_to_reply_id = response_data["reply_comment_id"]
 
-        reply = Comment.objects.get(pk=reply_id)
+        reply = Comment.objects.get(pk=reply_to_reply_id)
 
         assert reply.post == self.post
         assert reply.commented_on.id == self.comment.id
         assert reply.user == self.foo_user
-        assert reply.commentText == "This is reply"
+        assert reply.commentText == "This is reply to reply"
 

@@ -13,4 +13,5 @@ def api_wrapper(*args, **kwargs):
     react_to_post(user_id=user.id, post_id=post_id, reaction_type=request_data["reaction_type"])
 
     from django.http.response import HttpResponse
-    return HttpResponse(status=201)
+    import json
+    return HttpResponse(json.dumps({"status": "reaction added"}), status=201)

@@ -15,4 +15,5 @@ def api_wrapper(*args, **kwargs):
     response = {"reply_comment_id": reply_id}
 
     from django.http.response import HttpResponse
-    return HttpResponse(str(response), status=201)
+    import json
+    return HttpResponse(json.dumps(response), status=201)
