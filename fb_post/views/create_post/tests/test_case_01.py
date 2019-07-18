@@ -1,7 +1,7 @@
 """
 # TODO: Update test case description
 """
-from django_swagger_utils.drf_server.utils.server_gen.custom_api_test_case import CustomAPITestCase
+from django_swagger_utils.utils.test import CustomAPITestCase
 
 from . import APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX
 
@@ -38,25 +38,34 @@ TEST_CASE = {
 
 
 class TestCase01CreatePostAPITestCase(CustomAPITestCase):
-
-    def __init__(self, *args, **kwargs):
-        self.count_before_insertion = 0
-        super(TestCase01CreatePostAPITestCase, self).__init__(
-            APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
+    app_name = APP_NAME
+    operation_name = OPERATION_NAME
+    request_method = REQUEST_METHOD
+    url_suffix = URL_SUFFIX
+    test_case_dict = TEST_CASE
 
     def test_case(self):
         self.count_before_insertion = Post.objects.count()
-        super(TestCase01CreatePostAPITestCase, self).test_case()
+        self.default_test_case()
 
-    def compareResponse(self, response, test_case_response_dict):
-        super(TestCase01CreatePostAPITestCase, self).compareResponse(response, test_case_response_dict)
-
-        user = self.foo_user
+    def _assert_snapshots(self, response):
+        super(TestCase01CreatePostAPITestCase, self)._assert_snapshots(response)
         response_data = json.loads(response.content)
         post_id = response_data["post_id"]
-
         post = Post.objects.get(pk=post_id)
+        self.assert_match_snapshot(Post.objects.count() - self.count_before_insertion, "count_difference")
+        self.assert_match_snapshot(post.user_id, "user_id")
+        self.assert_match_snapshot(post.postBody, "post_content")
 
-        assert Post.objects.count() == self.count_before_insertion + 1
-        assert post.user_id == post.user_id
-        assert post.postBody == "This is a new post"
+    # def compareResponse(self, response, test_case_response_dict):
+    #     super(TestCase01CreatePostAPITestCase, self).compareResponse(response, test_case_response_dict)
+    #
+    #     user = self.foo_user
+    #     response_data = json.loads(response.content)
+    #     post_id = response_data["post_id"]
+    #
+    #     post = Post.objects.get(pk=post_id)
+    #
+    #     assert Post.objects.count() == self.count_before_insertion + 1
+    #     assert post.user_id == post.user_id
+    #     assert post.postBody == "This is a new post"

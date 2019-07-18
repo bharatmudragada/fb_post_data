@@ -1,7 +1,7 @@
 """
 # Reply to reply is also a reply to comment
 """
-from django_swagger_utils.drf_server.utils.server_gen.custom_api_test_case import CustomAPITestCase
+from django_swagger_utils.utils.test import CustomAPITestCase
 
 from . import APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX
 from fb_post.models import Post, Comment
@@ -35,9 +35,11 @@ TEST_CASE = {
 
 
 class TestCase02AddReplyToCommentAPITestCase(CustomAPITestCase):
-
-    def __init__(self, *args, **kwargs):
-        super(TestCase02AddReplyToCommentAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
+    app_name = APP_NAME
+    operation_name = OPERATION_NAME
+    request_method = REQUEST_METHOD
+    url_suffix = URL_SUFFIX
+    test_case_dict = TEST_CASE
 
     def setupUser(self, username, password):
         pass
@@ -52,20 +54,33 @@ class TestCase02AddReplyToCommentAPITestCase(CustomAPITestCase):
         self.setup_data()
         TEST_CASE["request"]["path_params"]["post_id"] = self.post.id
         TEST_CASE["request"]["path_params"]["comment_id"] = self.reply.id
-        super(TestCase02AddReplyToCommentAPITestCase, self).test_case()
+        self.default_test_case()
 
-    def compareResponse(self, response, test_case_response_dict):
-        super(TestCase02AddReplyToCommentAPITestCase, self).compareResponse(response, test_case_response_dict)
+    def _assert_snapshots(self, response):
+        super(TestCase02AddReplyToCommentAPITestCase, self)._assert_snapshots(response)
 
         import json
         response_data = json.loads(response.content)
-
         reply_to_reply_id = response_data["reply_comment_id"]
-
         reply = Comment.objects.get(pk=reply_to_reply_id)
 
-        assert reply.post == self.post
-        assert reply.commented_on.id == self.comment.id
-        assert reply.user == self.foo_user
-        assert reply.commentText == "This is reply to reply"
+        self.assert_match_snapshot(reply.post_id, "post_id")
+        self.assert_match_snapshot(reply.commented_on_id, "commented_on_id")
+        self.assert_match_snapshot(reply.user_id, "user_id")
+        self.assert_match_snapshot(reply.commentText, "comment_text")
+
+    # def compareResponse(self, response, test_case_response_dict):
+    #     super(TestCase02AddReplyToCommentAPITestCase, self).compareResponse(response, test_case_response_dict)
+    #
+    #     import json
+    #     response_data = json.loads(response.content)
+    #
+    #     reply_to_reply_id = response_data["reply_comment_id"]
+    #
+    #     reply = Comment.objects.get(pk=reply_to_reply_id)
+    #
+    #     assert reply.post == self.post
+    #     assert reply.commented_on.id == self.comment.id
+    #     assert reply.user == self.foo_user
+    #     assert reply.commentText == "This is reply to reply"
 

@@ -1,7 +1,7 @@
 """
 # TODO: Update test case description
 """
-from django_swagger_utils.drf_server.utils.server_gen.custom_api_test_case import CustomAPITestCase
+from django_swagger_utils.utils.test import CustomAPITestCase
 
 from . import APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX
 from fb_post.models import Post, PostReactions
@@ -35,10 +35,11 @@ TEST_CASE = {
 
 
 class TestCase01GetPostsReactedByUserAPITestCase(CustomAPITestCase):
-    
-    def __init__(self, *args, **kwargs):
-        super(TestCase01GetPostsReactedByUserAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD,
-                                                                    URL_SUFFIX, TEST_CASE, *args, **kwargs)
+    app_name = APP_NAME
+    operation_name = OPERATION_NAME
+    request_method = REQUEST_METHOD
+    url_suffix = URL_SUFFIX
+    test_case_dict = TEST_CASE
 
     def setupUser(self, username, password):
         pass
@@ -54,16 +55,5 @@ class TestCase01GetPostsReactedByUserAPITestCase(CustomAPITestCase):
 
     def test_case(self):
         self.setup_data()
-        super(TestCase01GetPostsReactedByUserAPITestCase, self).test_case()
+        self.default_test_case()
 
-    def compareResponse(self, response, test_case_response_dict):
-        super(TestCase01GetPostsReactedByUserAPITestCase, self).compareResponse(response, test_case_response_dict)
-
-        import json
-        response_data = json.loads(response.content)
-
-        post_ids = response_data["post_ids"]
-
-        assert self.post.id in post_ids
-        assert self.post_2.id in post_ids
-        assert self.post_3.id in post_ids

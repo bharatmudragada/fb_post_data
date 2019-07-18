@@ -35,10 +35,9 @@ TEST_CASE = {
 
 
 class TestCase02GetPostsReactedByUserAPITestCase(CustomAPITestCase):
-    
+
     def __init__(self, *args, **kwargs):
-        super(TestCase02GetPostsReactedByUserAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD,
-                                                                    URL_SUFFIX, TEST_CASE, *args, **kwargs)
+        super(TestCase02GetPostsReactedByUserAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
 
     def setupUser(self, username, password):
         pass

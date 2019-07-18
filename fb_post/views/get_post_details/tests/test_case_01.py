@@ -1,10 +1,12 @@
 """
 # TODO: Update test case description
 """
-from django_swagger_utils.drf_server.utils.server_gen.custom_api_test_case import CustomAPITestCase
+from django_swagger_utils.utils.test import CustomAPITestCase
 
 from . import APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX
 from fb_post.models.models import *
+from freezegun import freeze_time
+import datetime
 
 REQUEST_BODY = """
 
@@ -27,9 +29,11 @@ TEST_CASE = {
 
 
 class TestCase01GetPostDetailsAPITestCase(CustomAPITestCase):
-    def __init__(self, *args, **kwargs):
-        super(TestCase01GetPostDetailsAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX,
-                                                                TEST_CASE, *args, **kwargs)
+    app_name = APP_NAME
+    operation_name = OPERATION_NAME
+    request_method = REQUEST_METHOD
+    url_suffix = URL_SUFFIX
+    test_case_dict = TEST_CASE
 
     def setupUser(self, username, password):
         pass
@@ -48,6 +52,7 @@ class TestCase01GetPostDetailsAPITestCase(CustomAPITestCase):
         self.comment_reaction_2 = CommentReactions.objects.create(comment=self.comment, user=self.user_3, reactionType="LOVE")
         self.comment_reaction_3 = CommentReactions.objects.create(comment=self.comment, user=self.user_4, reactionType="WOW")
 
+    @freeze_time("2019-08-18")
     def setup_data(self):
         self.setup_user_data()
         self.post = Post.objects.create(user=self.foo_user, postBody="This is first post")
@@ -58,45 +63,46 @@ class TestCase01GetPostDetailsAPITestCase(CustomAPITestCase):
     def test_case(self):
         self.setup_data()
         TEST_CASE["request"]["path_params"]["post_id"] = self.post.id
+        self.default_test_case()
 
-        super(TestCase01GetPostDetailsAPITestCase, self).test_case()
-
-    def compareResponse(self, response, test_case_response_dict):
-        import json
-        post_data = json.loads(response.content)
-
-        assert post_data["post_id"] == self.post.id
-        assert post_data["posted_by"]["user_id"] == self.foo_user.id
-        assert post_data["post_content"] == self.post.postBody
-        assert post_data["reactions"]["count"] == 2
-        assert post_data["reactions"]["type"].sort() == ["WOW"].sort()
-
-        comments = post_data["comments"]
-
-        comment_ids = [comment["comment_id"] for comment in comments]
-
-        assert self.comment.id in comment_ids
-
-        comment_data = None
-        for comment_details in post_data["comments"]:
-            if comment_details["comment_id"] == self.comment.id:
-                comment_data = comment_details
-
-        assert comment_data["commenter"]["user_id"] == self.foo_user.id
-        assert comment_data["comment_content"] == self.comment.commentText
-        assert comment_data["commented_at"] == self.comment.commentedTime.strftime('%y-%m-%d %H:%M:%S.%f')
-
-        reply_ids = [reply["comment_id"] for reply in comment_data["replies"]]
-
-        assert self.reply.id in reply_ids
-
-        reply_data = None
-        for reply_details in comment_data["replies"]:
-            if reply_details["comment_id"] == self.reply.id:
-                reply_data = reply_details
-                break
-
-        assert reply_data["commenter"]["user_id"] == self.foo_user.id
-        assert reply_data["comment_content"] == self.reply.commentText
-
-        assert response.status_code == 201
+    # def compareResponse(self, response, test_case_response_dict):
+    #     import json
+    #     post_data = json.loads(response.content)
+    #
+    #     assert post_data["post_id"] == self.post.id
+    #     assert post_data["posted_by"]["user_id"] == self.foo_user.id
+    #     assert post_data["post_content"] == self.post.postBody
+    #     assert post_data["reactions"]["count"] == 2
+    #     assert post_data["reactions"]["type"].sort() == ["WOW"].sort()
+    #
+    #     comments = post_data["comments"]
+    #
+    #     comment_ids = [comment["comment_id"] for comment in comments]
+    #
+    #     assert self.comment.id in comment_ids
+    #
+    #     comment_data = None
+    #     for comment_details in post_data["comments"]:
+    #         if comment_details["comment_id"] == self.comment.id:
+    #             comment_data = comment_details
+    #
+    #     assert comment_data["commenter"]["user_id"] == self.foo_user.id
+    #     assert comment_data["comment_content"] == self.comment.commentText
+    #     assert comment_data["commented_at"] == self.comment.commentedTime.strftime('%y-%m-%d %H:%M:%S.%f')
+    #     assert comment_data["reactions"]["count"] == 3
+    #     assert comment_data["reactions"]["type"].sort() == ["LOVE", "WOW"].sort()
+    #
+    #     reply_ids = [reply["comment_id"] for reply in comment_data["replies"]]
+    #
+    #     assert self.reply.id in reply_ids
+    #
+    #     reply_data = None
+    #     for reply_details in comment_data["replies"]:
+    #         if reply_details["comment_id"] == self.reply.id:
+    #             reply_data = reply_details
+    #             break
+    #
+    #     assert reply_data["commenter"]["user_id"] == self.foo_user.id
+    #     assert reply_data["comment_content"] == self.reply.commentText
+    #
+    #     assert response.status_code == 201

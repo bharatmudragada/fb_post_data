@@ -1,7 +1,7 @@
 """
 # TODO: Update test case description
 """
-from django_swagger_utils.drf_server.utils.server_gen.custom_api_test_case import CustomAPITestCase
+from django_swagger_utils.utils.test import CustomAPITestCase
 
 from . import APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX
 from fb_post.models import Post, Comment
@@ -35,9 +35,11 @@ TEST_CASE = {
 
 
 class TestCase01AddCommentToPostAPITestCase(CustomAPITestCase):
-
-    def __init__(self, *args, **kwargs):
-        super(TestCase01AddCommentToPostAPITestCase, self).__init__(APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX, TEST_CASE, *args, **kwargs)
+    app_name = APP_NAME
+    operation_name = OPERATION_NAME
+    request_method = REQUEST_METHOD
+    url_suffix = URL_SUFFIX
+    test_case_dict = TEST_CASE
 
     def setupUser(self, username, password):
         pass
@@ -50,18 +52,32 @@ class TestCase01AddCommentToPostAPITestCase(CustomAPITestCase):
         self.setup_data()
         TEST_CASE["request"]["path_params"]["post_id"] = self.post.id
         self.count_before_insertion = Comment.objects.filter(post=self.post).count()
-        super(TestCase01AddCommentToPostAPITestCase, self).test_case()
+        self.default_test_case()
 
-    def compareResponse(self, response, test_case_response_dict):
-        super(TestCase01AddCommentToPostAPITestCase, self).compareResponse(response, test_case_response_dict)
+    def _assert_snapshots(self, response):
+        super(TestCase01AddCommentToPostAPITestCase,self)._assert_snapshots(response)
 
         import json
         response_data = json.loads(response.content)
         comment_id = response_data["comment_id"]
-
         comment = Comment.objects.get(pk=comment_id)
 
-        assert Comment.objects.filter(post=self.post).count() == self.count_before_insertion + 1
-        assert comment.user_id == self.foo_user.id
-        assert comment.commentText == "This is comment to post"
-        assert comment.post_id == self.post.id
+        self.assert_match_snapshot(comment.commentText, name="comment_text")
+        self.assert_match_snapshot(Comment.objects.filter(post=self.post).count() - self.count_before_insertion, "count_difference")
+        self.assert_match_snapshot(comment.user_id, name="user_id")
+        self.assert_match_snapshot(comment.post_id, name="post_id")
+
+    #
+    # def compareResponse(self, response, test_case_response_dict):
+    #     super(TestCase01AddCommentToPostAPITestCase, self).compareResponse(response, test_case_response_dict)
+    #
+    #     import json
+    #     response_data = json.loads(response.content)
+    #     comment_id = response_data["comment_id"]
+    #
+    #     comment = Comment.objects.get(pk=comment_id)
+    #
+    #     assert Comment.objects.filter(post=self.post).count() == self.count_before_insertion + 1
+    #     assert comment.user_id == self.foo_user.id
+    #     assert comment.commentText == "This is comment to post"
+    #     assert comment.post_id == self.post.id

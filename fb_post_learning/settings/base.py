@@ -344,7 +344,7 @@ DEFAULT_SENDER_EMAIL = str(os.environ.get("DEFAULT_SENDER_EMAIL", ""))
 FB_POST_LEARNING_SOURCE = "fb-post-learning-source"
 
 # test runner setting
-# TEST_RUNNER = 'snapshottest.django.TestRunner'
+TEST_RUNNER = 'snapshottest.django.TestRunner'
 MOCK_X_IB_REQUEST_ID = True
 
 STAGE = os.environ.get("STAGE", "local")
