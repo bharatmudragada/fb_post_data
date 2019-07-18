@@ -16,7 +16,8 @@ def api_wrapper(*args, **kwargs):
         replies = get_replies_for_comment(comment_id=comment_id, offset=offset, limit=limit)
 
         from django.http.response import HttpResponse
-        return HttpResponse(str(replies), status=201)
+        import json
+        return HttpResponse(json.dumps(replies), status=201)
     except SuspiciousOperation:
         from django_swagger_utils.drf_server.exceptions import BadRequest
         raise BadRequest('Invalid comment id', 'INVALID_COMMENT_ID')

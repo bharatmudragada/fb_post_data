@@ -8,11 +8,8 @@ from fb_post.Operations import get_post
 def api_wrapper(*args, **kwargs):
     post_id = kwargs["post_id"]
 
-    print(post_id)
-
     response = get_post(post_id=post_id)
 
-    print(response)
-
     from django.http.response import HttpResponse
-    return HttpResponse(str(response), status=201)
+    import json
+    return HttpResponse(json.dumps(response), status=201)

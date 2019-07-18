@@ -6,7 +6,9 @@ REQUEST_METHOD = "get"
 URL_SUFFIX = "post/{post_id}/reactions/"
 
 from .test_case_01 import TestCase01GetReactionsToPostAPITestCase
+from .test_case_02 import TestCase02GetReactionsToPostAPITestCase
 
 __all__ = [
-    "TestCase01GetReactionsToPostAPITestCase"
+    "TestCase01GetReactionsToPostAPITestCase",
+    "TestCase02GetReactionsToPostAPITestCase"
 ]

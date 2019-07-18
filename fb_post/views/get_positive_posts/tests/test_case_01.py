@@ -26,7 +26,7 @@ TEST_CASE = {
         "securities": {"oauth": {"tokenUrl": "http://auth.ibtspl.com/oauth2/", "flow": "password", "scopes": ["read"], "type": "oauth2"}},
         "body": REQUEST_BODY,
     },
-"response": {
+    "response": {
         "status": 201,
         "body": RESPONSE_BODY,
         "header_params": {}

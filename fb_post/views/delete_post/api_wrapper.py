@@ -13,7 +13,8 @@ def api_wrapper(*args, **kwargs):
         delete_post(post_id)
 
         from django.http.response import HttpResponse
-        return HttpResponse(status=201)
+        import json
+        return HttpResponse(json.dumps({"status": "post_deleted"}), status=201)
     except ObjectDoesNotExist:
         from django_swagger_utils.drf_server.exceptions import BadRequest
         raise BadRequest('Invalid post id', 'INVALID_POST_ID')

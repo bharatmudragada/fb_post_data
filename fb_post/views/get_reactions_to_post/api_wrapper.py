@@ -14,4 +14,5 @@ def api_wrapper(*args, **kwargs):
     reactions = get_reactions_to_post(post_id=post_id, offset=offset, limit=limit)
 
     from django.http.response import HttpResponse
-    return HttpResponse(str(reactions), status=201)
+    import json
+    return HttpResponse(json.dumps(reactions), status=201)
