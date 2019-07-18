@@ -13,4 +13,5 @@ def api_wrapper(*args, **kwargs):
     response = {"post_ids": post_ids}
 
     from django.http.response import HttpResponse
-    return HttpResponse(str(response), status=201)
+    import json
+    return HttpResponse(json.dumps(response), status=201)
