@@ -1,7 +1,7 @@
 import abc
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 
 @dataclass
@@ -31,29 +31,7 @@ class CommentDTO:
     commenter: UserDTO
     commented_at: datetime
     comment_content: str
-    commented_on_id: int
-
-
-@dataclass
-class CommentDTOWithReactions(CommentDTO):
-    reactions: ReactionDataDTO
-
-
-@dataclass
-class CommentDTOWithReplies(CommentDTOWithReactions):
-    replies_count: 1
-    replies: List[CommentDTOWithReactions]
-
-
-@dataclass
-class GetPostDTO:
-    post_id: int
-    posted_by: UserDTO
-    posted_at: datetime
-    post_content: str
-    reactions: ReactionDataDTO
-    comments: List[CommentDTOWithReplies]
-    comments_count: int
+    commented_on_id: Optional[int]
 
 
 @dataclass
@@ -74,8 +52,20 @@ class CommentReactionDTO(ReactionDTO):
 
 
 @dataclass
+class GetPostDTO:
+    post_details: PostDTO
+    post_reaction_data: ReactionDataDTO
+    comments: List[CommentDTO]
+    comment_reactions: List[CommentReactionDTO]
+
+
+@dataclass
 class GetUserPostsDTO:
-    posts: List[GetPostDTO]
+    post_details: List[PostDTO]
+    post_reaction_data: List[ReactionDataDTO]
+    comments: List[CommentDTO]
+    comment_reactions: List[CommentReactionDTO]
+
 
 
 @dataclass
@@ -115,15 +105,55 @@ class PostStorage:
         pass
 
     @abc.abstractmethod
+    def is_comment(self, comment_id: int) -> bool:
+        pass
+
+    @abc.abstractmethod
+    def get_comment_id(self, comment_id: int) -> int:
+        pass
+
+    @abc.abstractmethod
     def add_reply_to_comment(self, comment_id: int, reply_user_id: int, reply_text: str) -> CommentDTO:
         pass
 
     @abc.abstractmethod
-    def react_to_post(self, user_id: int, post_id: int, reaction_type: str) -> PostReactionDTO:
+    def post_reaction_exists(self, user_id: int, post_id: int) -> bool:
         pass
 
     @abc.abstractmethod
-    def react_to_comment(self, user_id: int, comment_id: int, reaction_type: str) -> CommentReactionDTO:
+    def get_post_reaction(self, user_id: int, post_id: int) -> str:
+        pass
+
+    @abc.abstractmethod
+    def delete_post_reaction(self, user_id: int, post_id: int):
+        pass
+
+    @abc.abstractmethod
+    def update_post_reaction(self, user_id: int, post_id: int, reaction_type: str) -> PostReactionDTO:
+        pass
+
+    @abc.abstractmethod
+    def add_reaction_to_post(self, user_id: int, post_id: int, reaction_type: str) -> PostReactionDTO:
+        pass
+
+    @abc.abstractmethod
+    def comment_reaction_exists(self, user_id: int, post_id: int) -> bool:
+        pass
+
+    @abc.abstractmethod
+    def get_comment_reaction(self, user_id: int, comment_id: int) -> str:
+        pass
+
+    @abc.abstractmethod
+    def delete_comment_reaction(self, user_id: int, comment_id: int):
+        pass
+
+    @abc.abstractmethod
+    def update_comment_reaction(self, user_id: int, comment_id: int, reaction_type: str) -> CommentReactionDTO:
+        pass
+
+    @abc.abstractmethod
+    def add_reaction_to_comment(self, user_id: int, comment_id: int, reaction_type: str) -> CommentReactionDTO:
         pass
 
     @abc.abstractmethod
@@ -152,6 +182,10 @@ class PostStorage:
 
     @abc.abstractmethod
     def get_replies_to_comment(self, comment_id) -> List[CommentDTO]:
+        pass
+
+    @abc.abstractmethod
+    def post_exists(self, post_id) -> bool:
         pass
 
     @abc.abstractmethod

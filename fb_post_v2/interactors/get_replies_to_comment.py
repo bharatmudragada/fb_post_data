@@ -9,6 +9,10 @@ class GetRepliesToCommentInteractor:
         self.presenter = presenter
 
     def get_replies_to_comment(self, comment_id: int):
-        replies_dto = self.post_storage.get_replies_to_comment(comment_id)
-        response = self.presenter.get_replies_to_comment(replies_dto)
-        return response
+        is_comment = self.post_storage.is_comment(comment_id)
+        if not is_comment:
+            return self.presenter.raise_not_a_comment_exception()
+        else:
+            replies_dto = self.post_storage.get_replies_to_comment(comment_id)
+            response = self.presenter.get_replies_to_comment(replies_dto)
+            return response

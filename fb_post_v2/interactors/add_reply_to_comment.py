@@ -9,6 +9,9 @@ class AddReplyToCommentInteractor:
         self.presenter = presenter
 
     def add_reply_to_comment(self, comment_id: int, reply_user_id: int, reply_text: str):
-        comment_dto = self.post_storage.add_comment_to_post(comment_id, reply_user_id, reply_text)
-        response = self.presenter.add_comment_to_post(comment_dto)
+        is_comment = self.post_storage.is_comment(comment_id)
+        if not is_comment:
+            comment_id = self.post_storage.get_comment_id(comment_id)
+        comment_dto = self.post_storage.add_reply_to_comment(comment_id, reply_user_id, reply_text)
+        response = self.presenter.add_reply_to_comment(comment_dto)
         return response

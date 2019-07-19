@@ -26,11 +26,27 @@ class JsonPresenter:
         pass
 
     @abc.abstractmethod
-    def react_to_post(self, post_reaction_dto: PostReactionDTO):
+    def delete_post_reaction(self):
         pass
 
     @abc.abstractmethod
-    def react_to_comment(self, comment_reaction_dto: CommentReactionDTO):
+    def update_post_reaction(self, reaction_dto: PostReactionDTO):
+        pass
+
+    @abc.abstractmethod
+    def add_reaction_to_post(self, post_reaction_dto: PostReactionDTO):
+        pass
+
+    @abc.abstractmethod
+    def delete_comment_reaction(self):
+        pass
+
+    @abc.abstractmethod
+    def update_comment_reaction(self, reaction_dto: CommentReactionDTO):
+        pass
+
+    @abc.abstractmethod
+    def add_reaction_to_comment(self, comment_reaction_dto: CommentReactionDTO):
         pass
 
     @abc.abstractmethod
@@ -62,6 +78,13 @@ class JsonPresenter:
         pass
 
     @abc.abstractmethod
+    def raise_not_a_comment_exception(self):
+        pass
+
+    @abc.abstractmethod
     def delete_post(self, status_dict: Dict):
         pass
 
+    @abc.abstractmethod
+    def raise_post_does_not_exist_exception(self):
+        pass
