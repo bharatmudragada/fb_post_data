@@ -21,6 +21,7 @@ from django_swagger_utils.drf_server.utils.general.import_app_settings import im
 THIRD_PARTY_APPS = []
 APPS = [
     "fb_post",
+    "fb_post_v2"
 ]
 
 INSTALLED_APPS += THIRD_PARTY_APPS
@@ -57,6 +58,7 @@ SWAGGER_UTILS = {
     },
     "APPS": {
         "fb_post": {},
+        "fb_post_v2": {}
     },
     "HOST": os.environ.get('APIGATEWAY_ENDPOINT', '127.0.0.1:8000'),
 }
