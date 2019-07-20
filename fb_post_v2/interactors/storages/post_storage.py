@@ -76,14 +76,14 @@ class ReactionDetailsDTO(UserDTO):
 
 
 @dataclass
-class ReactionMeticDTO:
+class ReactionMetricDTO:
     reaction_type: str
     count: int
 
 
 @dataclass
 class ReactionMetricsDTO:
-    metrics: List[ReactionMeticDTO]
+    metrics: List[ReactionMetricDTO]
 
 
 @dataclass
@@ -172,7 +172,7 @@ class PostStorage:
         pass
 
     @abc.abstractmethod
-    def get_reactions_to_post(self, post_id: int) -> ReactionDetailsDTO:
+    def get_reactions_to_post(self, post_id: int) -> List[ReactionDetailsDTO]:
         pass
 
     @abc.abstractmethod
