@@ -12,6 +12,6 @@ class DeletePostInteractor:
         post_exists = self.post_storage.post_exists(post_id)
         if post_exists:
             status_dict = self.post_storage.delete_post(post_id)
-            response = self.presenter.delete_post(status_dict)
+            response = self.presenter.get_delete_post_response(status_dict)
             return response
         return self.presenter.raise_post_does_not_exist_exception()

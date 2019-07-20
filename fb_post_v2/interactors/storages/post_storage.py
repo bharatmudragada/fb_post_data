@@ -22,7 +22,7 @@ class UserDTO:
 @dataclass
 class ReactionDataDTO:
     count: int
-    type: [str]
+    type: List[str]
 
 
 @dataclass
@@ -61,11 +61,7 @@ class GetPostDTO:
 
 @dataclass
 class GetUserPostsDTO:
-    post_details: List[PostDTO]
-    post_reaction_data: List[ReactionDataDTO]
-    comments: List[CommentDTO]
-    comment_reactions: List[CommentReactionDTO]
-
+    posts: List[GetPostDTO]
 
 
 @dataclass
@@ -79,13 +75,19 @@ class ReactionDetailsDTO(UserDTO):
 
 
 @dataclass
+class ReactionMeticDTO:
+    reaction_type: str
+    count: int
+
+
+@dataclass
 class ReactionMetricsDTO:
-    metrics: List[Dict]
+    metrics: List[ReactionMeticDTO]
 
 
 @dataclass
 class TotalReactionsDTO:
-    count: Dict[str, int]
+    count: int
 
 
 class PostStorage:
@@ -105,11 +107,11 @@ class PostStorage:
         pass
 
     @abc.abstractmethod
-    def is_comment(self, comment_id: int) -> bool:
+    def is_reply(self, comment_id: int) -> bool:
         pass
 
     @abc.abstractmethod
-    def get_comment_id(self, comment_id: int) -> int:
+    def get_comment_id_for_reply(self, comment_id: int) -> int:
         pass
 
     @abc.abstractmethod

@@ -10,5 +10,5 @@ class GetUserPostsInteractor:
 
     def get_positive_posts(self):
         post_ids_dto = self.post_storage.get_positive_posts()
-        response = self.presenter.get_positive_posts(post_ids_dto)
+        response = self.presenter.get_positive_posts_response(post_ids_dto)
         return response
