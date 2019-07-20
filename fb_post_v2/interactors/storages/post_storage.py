@@ -91,6 +91,14 @@ class TotalReactionsDTO:
     count: int
 
 
+@dataclass
+class RepliesDTO:
+    comment_id: int
+    user: UserDTO
+    commented_at: datetime
+    comment_content: str
+
+
 class PostStorage:
 
     __metaclass__ = abc.ABCMeta
@@ -184,7 +192,7 @@ class PostStorage:
         pass
 
     @abc.abstractmethod
-    def get_replies_to_comment(self, comment_id) -> List[CommentDTO]:
+    def get_replies_to_comment(self, comment_id) -> List[RepliesDTO]:
         pass
 
     @abc.abstractmethod

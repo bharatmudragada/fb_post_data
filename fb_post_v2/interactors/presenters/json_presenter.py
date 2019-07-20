@@ -1,7 +1,8 @@
 import abc
 
 from fb_post_v2.interactors.storages.post_storage import PostDTO, GetPostDTO, CommentDTO, PostReactionDTO, \
-    CommentReactionDTO, GetUserPostsDTO, PostIdsDTO, ReactionDetailsDTO, ReactionMetricsDTO, TotalReactionsDTO
+    CommentReactionDTO, GetUserPostsDTO, PostIdsDTO, ReactionDetailsDTO, ReactionMetricsDTO, TotalReactionsDTO, \
+    RepliesDTO
 from typing import List, Dict, Optional
 
 
@@ -58,7 +59,7 @@ class JsonPresenter:
         pass
 
     @abc.abstractmethod
-    def get_replies_to_comment_response(self, replies_dto: List[CommentDTO]):
+    def get_replies_to_comment_response(self, replies_dto: List[RepliesDTO]):
         pass
 
     @abc.abstractmethod
