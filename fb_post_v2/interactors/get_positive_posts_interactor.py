@@ -2,7 +2,7 @@ from fb_post_v2.interactors.presenters.json_presenter import JsonPresenter
 from fb_post_v2.interactors.storages.post_storage import PostStorage
 
 
-class GetUserPostsInteractor:
+class GetPositivePostsInteractor:
 
     def __init__(self, post_storage: PostStorage, presenter: JsonPresenter):
         self.post_storage = post_storage
