@@ -8,9 +8,9 @@ from fb_post_v2.interactors.presenters.json_presenter import JsonPresenter
 from fb_post_v2.interactors.storages.post_storage import PostStorage, PostDTO
 
 
-class TestAddCommentToPost(unittest.TestCase):
+class TestCreatePost(unittest.TestCase):
 
-    def test_add_comment_to_post(self):
+    def test_create_post(self):
         post_storage_mock = create_autospec(PostStorage)
         presenter_mock = create_autospec(JsonPresenter)
 

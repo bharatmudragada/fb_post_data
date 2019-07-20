@@ -60,7 +60,7 @@ class TestAddReplyToComment(unittest.TestCase):
 
         post_storage_mock.is_reply.assert_called_once_with(comment_id)
         post_storage_mock.get_comment_id_for_reply.assert_called_once_with(comment_id)
-        post_storage_mock.add_reply_to_comment(commented_on_id, reply_user_id, reply_text)
+        post_storage_mock.add_reply_to_comment.assert_called_once_with(commented_on_id, reply_user_id, reply_text)
         presenter_mock.get_add_reply_to_comment_response.assert_called_once_with(comment_dto)
         assert response == response_data
 
