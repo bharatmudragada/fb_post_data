@@ -3,7 +3,7 @@ from unittest.mock import create_autospec
 
 from fb_post_v2.interactors.get_posts_reacted_by_user_interactor import GetPostsReactedByUserInteractor
 from fb_post_v2.interactors.presenters.json_presenter import JsonPresenter
-from fb_post_v2.interactors.storages.post_storage import PostStorage, ReactionDetailsDTO
+from fb_post_v2.interactors.storages.post_storage import PostStorage, PostIdsDTO
 
 
 class TestGetPostsReactedByUser(unittest.TestCase):
@@ -13,9 +13,10 @@ class TestGetPostsReactedByUser(unittest.TestCase):
         presenter_mock = create_autospec(JsonPresenter)
 
         user_id = 1
-        response_data = {"reaction_data": "reactions"}
+        post_ids = [1, 2, 3]
+        response_data = {"post_ids": post_ids}
 
-        reactions_dto = [ReactionDetailsDTO(user_id=1, name="user", profile_pic_url="url", reaction_type="LOVE")]
+        reactions_dto = PostIdsDTO(post_ids=post_ids)
         post_storage_mock.get_posts_reacted_by_user.return_value = reactions_dto
         presenter_mock.get_posts_reacted_by_user_response.return_value = response_data
 
