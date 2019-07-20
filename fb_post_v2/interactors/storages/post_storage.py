@@ -28,7 +28,7 @@ class ReactionDataDTO:
 @dataclass
 class CommentDTO:
     comment_id: int
-    commenter: UserDTO
+    user_id: int
     commented_at: datetime
     comment_content: str
     commented_on_id: Optional[int]
