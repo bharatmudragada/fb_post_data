@@ -8,7 +8,7 @@ from fb_post_v2.interactors.storages.post_storage import PostStorage, GetPostDTO
 
 class TestGetPostInteractor(unittest.TestCase):
 
-    def test_positive_posts(self):
+    def test_get_post(self):
         post_storage_mock = create_autospec(PostStorage)
         presenter_mock = create_autospec(JsonPresenter)
 
