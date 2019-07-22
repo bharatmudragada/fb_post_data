@@ -20,8 +20,8 @@ class TestGetReactionsToPost(unittest.TestCase):
         presenter_mock.get_reactions_to_post_response.return_value = response_data
 
         get_reactions_to_post_interactor = GetReactionsToPostInteractor(post_storage_mock, presenter_mock)
-        response = get_reactions_to_post_interactor.get_reactions_to_post(post_id)
+        response = get_reactions_to_post_interactor.get_reactions_to_post(post_id, 0, 2)
 
-        post_storage_mock.get_reactions_to_post.assert_called_once_with(post_id)
+        post_storage_mock.get_reactions_to_post.assert_called_once_with(post_id, 0, 2)
         presenter_mock.get_reactions_to_post_response.assert_called_once_with(reactions_dto)
         assert response == response_data

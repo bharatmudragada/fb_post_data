@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    userPhoto = models.CharField(max_length=30)
+    profile_pic_url = models.CharField(max_length=30)
 
     def __str__(self):
         return self.username
@@ -14,47 +14,47 @@ class User(AbstractUser):
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    postBody = models.CharField(max_length=200)
-    postedTime = models.DateTimeField(auto_now=True)
+    post_content = models.CharField(max_length=200)
+    posted_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.pk) + ", " + str(self.user) + ", " + self.postBody
+        return str(self.pk) + ", " + str(self.user) + ", " + str(self.post_content)
 
 
 class PostReactions(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    reactionType = models.CharField(max_length=10, choices=Reaction.get_reactions())
+    reaction_type = models.CharField(max_length=10, choices=Reaction.get_reactions())
 
     class Meta:
         unique_together = ('post', 'user')
 
     def __str__(self):
-        return str(self.post.postBody) + ", " + str(self.user) + ", " + self.reactionType
+        return str(self.post.post_content) + ", " + str(self.user) + ", " + str(self.reaction_type)
 
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     commented_on = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, default=None)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    commentText = models.CharField(max_length=100)
-    commentedTime = models.DateTimeField(auto_now=True)
+    comment_text = models.CharField(max_length=100)
+    commented_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         if not self.commented_on == None:
-            return str(self.pk) + ", " + str(self.commented_on.pk) + ", " + str(self.user) + ", " + self.commentText
+            return str(self.pk) + ", " + str(self.commented_on.pk) + ", " + str(self.user) + ", " + str(self.comment_text)
         else:
-            return str(self.pk) + ", " + str(self.user) + ", " + self.commentText
+            return str(self.pk) + ", " + str(self.user) + ", " + str(self.comment_text)
 
 
 class CommentReactions(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    reactionType = models.CharField(max_length=10, choices=Reaction.get_reactions())
+    reaction_type = models.CharField(max_length=10, choices=Reaction.get_reactions())
 
     class Meta:
         unique_together = ('comment', 'user')
 
     def __str__(self):
-        return str(self.comment.commentText) + ", " + str(self.user) + ", " + self.reactionType
+        return str(self.comment.comment_text) + ", " + str(self.user) + ", " + str(self.reaction_type)
 

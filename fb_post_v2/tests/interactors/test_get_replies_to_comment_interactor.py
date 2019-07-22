@@ -23,10 +23,10 @@ class TestGetRepliesToComment(unittest.TestCase):
         presenter_mock.get_replies_to_comment_response.return_value = response_data
 
         get_replies_to_comment_interactor = GetRepliesToCommentInteractor(post_storage_mock, presenter_mock)
-        response = get_replies_to_comment_interactor.get_replies_to_comment(comment_id)
+        response = get_replies_to_comment_interactor.get_replies_to_comment(comment_id, 0, 2)
 
         post_storage_mock.is_reply.assert_called_once_with(comment_id)
-        post_storage_mock.get_replies_to_comment.assert_called_once_with(comment_id)
+        post_storage_mock.get_replies_to_comment.assert_called_once_with(comment_id, 0, 2)
         presenter_mock.get_replies_to_comment_response.assert_called_once_with(replies_dto)
         assert response == response_data
 
@@ -41,6 +41,6 @@ class TestGetRepliesToComment(unittest.TestCase):
 
         get_replies_to_comment_interactor = GetRepliesToCommentInteractor(post_storage_mock, presenter_mock)
         with self.assertRaises(BadRequest):
-            get_replies_to_comment_interactor.get_replies_to_comment(comment_id)
+            get_replies_to_comment_interactor.get_replies_to_comment(comment_id, 0, 2)
 
         post_storage_mock.is_reply.assert_called_once_with(comment_id)
