@@ -51,11 +51,11 @@ class JsonPresenter:
         pass
 
     @abc.abstractmethod
-    def get_reaction_metrics_response(self, reactions_dto: List[ReactionMetricDTO]):
+    def get_reaction_metrics_response(self, reaction_metrics_dto: List[ReactionMetricDTO]):
         pass
 
     @abc.abstractmethod
-    def get_total_reaction_count_response(self, reactions_dto: TotalReactionsDTO):
+    def get_total_reaction_count_response(self, total_reactions_dto: TotalReactionsDTO):
         pass
 
     @abc.abstractmethod

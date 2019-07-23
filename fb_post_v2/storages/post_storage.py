@@ -268,9 +268,7 @@ class PostStorage(PostStorage):
         except ObjectDoesNotExist:
             return False
 
-    def delete_post(self, post_id) -> Dict:
+    def delete_post(self, post_id):
 
         post = Post.objects.get(pk=post_id)
         post.delete()
-
-        return {"status": "Post Deleted"}

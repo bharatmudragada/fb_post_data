@@ -205,5 +205,5 @@ class PostStorage:
         pass
 
     @abc.abstractmethod
-    def delete_post(self, post_id) -> Dict:
+    def delete_post(self, post_id):
         pass
