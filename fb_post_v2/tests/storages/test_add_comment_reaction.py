@@ -26,4 +26,3 @@ class TestAddCommentReaction:
         assert comment_reaction_dto.user_id == comment_reaction.user_id
         assert comment_reaction_dto.reaction_type == comment_reaction.reaction_type
         assert comment_reaction_dto.comment_id == comment_reaction.comment_id
-
