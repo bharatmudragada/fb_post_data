@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import List
 
 from fb_post_v2.interactors.storages.post_storage import PostStorage, RepliesDTO, TotalReactionsDTO, \
     ReactionDetailsDTO, PostIdsDTO, CommentReactionDTO, PostReactionDTO, CommentDTO, GetPostDTO, \
@@ -10,6 +10,7 @@ from django.db.models import Count, F, Q, Subquery
 
 
 class PostStorage(PostStorage):
+
     def create_post(self, post_content: str, user_id: int) -> PostDTO:
 
         post = Post.objects.create(user_id=user_id, post_content=post_content)
@@ -22,7 +23,7 @@ class PostStorage(PostStorage):
     def get_reaction_dto(self, comment_reactions):
         return ReactionDataDTO(count=comment_reactions['count'], type=list(comment_reactions['type']))
 
-    def get_comment_dto(self, comment, comment_reactions):
+    def get_comment_dto_with_out_replies(self, comment, comment_reactions):
         user_dto = self.get_user_dto(comment)
         reaction_dto = self.get_reaction_dto(comment_reactions)
         comment_dto = CommentDetailsDTO(comment_id=comment['id'], user=user_dto, commented_at=comment['commented_time'], comment_content=comment['comment_text'], comment_reactions=reaction_dto)
@@ -36,16 +37,20 @@ class PostStorage(PostStorage):
 
         return comment_dto
 
-    def get_comment_replys(self, all_comment_replys):
-        comment_replys = {}
+    def get_comment_replies(self, all_comment_replies):
+        comment_replies = {}
 
-        for reply in all_comment_replys:
+        for reply in all_comment_replies:
             try:
-                comment_replys[reply['commented_on']].append(reply)
+                comment_replies[reply['commented_on']].append(reply)
             except KeyError:
-                comment_replys[reply['commented_on']] = [reply]
+                comment_replies[reply['commented_on']] = [reply]
 
-        return comment_replys
+        return comment_replies
+
+    def add_reaction_to_comment_reaction_data(self, comment_reaction, reaction):
+        comment_reaction['count'] += 1
+        comment_reaction['type'].add(reaction['reaction_type'])
 
     def get_comment_reactions(self, all_comment_reactions):
         comment_reactions = {}
@@ -53,33 +58,48 @@ class PostStorage(PostStorage):
         for reaction in all_comment_reactions:
             try:
                 comment_reaction = comment_reactions[reaction['comment_id']]
-                comment_reaction['count'] += 1
-                comment_reaction['type'].add(reaction['reaction_type'])
+                self.add_reaction_to_comment_reaction_data(comment_reaction, reaction)
             except KeyError:
                 comment_reactions[reaction['comment_id']] = {"count": 1, "type": set([reaction['reaction_type']])}
 
         return comment_reactions
 
-    def get_comment_dto_list(self, comments_of_post, comment_replys, comment_reactions):
-        comments_dto = []
+    def get_reply_reactions(self, comment_reactions, reply):
+        try:
+            reply_reactions = comment_reactions[reply['id']]
+        except KeyError:
+            reply_reactions = {"count": 0, "type": []}
+
+        return reply_reactions
+
+    def get_complete_comment_dto(self, all_comment_reactions, comment, replies_dto):
+
+        if comment['id'] in all_comment_reactions:
+            return self.get_comment_dto_with_replies(comment, all_comment_reactions[comment['id']], replies_dto, len(replies_dto))
+        else:
+            return self.get_comment_dto_with_replies(comment, {"count": 0, "type": {}}, replies_dto, len(replies_dto))
+
+    def get_replies_dto_to_comment(self, comment_replies, all_comment_reactions, comment):
+
+        replies_dto = []
+        for reply in comment_replies[comment['id']]:
+            reply_reactions = self.get_reply_reactions(all_comment_reactions, reply)
+            replies_dto.append(self.get_comment_dto_with_out_replies(reply, reply_reactions))
+
+        return replies_dto
+
+    def get_comment_dto_list(self, comments_of_post, comment_replies, all_comment_reactions):
+        all_comments_dto = []
 
         for comment in comments_of_post:
             replies_dto = []
 
-            if comment['id'] in comment_replys:
-                for reply in comment_replys[comment['id']]:
-                    try:
-                        reply_reactions = comment_reactions[reply['id']]
-                    except KeyError:
-                        reply_reactions = {"count": 0, "type": []}
-                    replies_dto.append(self.get_comment_dto(reply, reply_reactions))
+            if comment['id'] in comment_replies:
+                replies_dto = self.get_replies_dto_to_comment(comment_replies, all_comment_reactions, comment)
 
-            if comment['id'] in comment_reactions:
-                comments_dto.append(self.get_comment_dto_with_replies(comment, comment_reactions[comment['id']], replies_dto, len(replies_dto)))
-            else:
-                comments_dto.append(self.get_comment_dto_with_replies(comment, {"count": 0, "type": {}}, replies_dto, len(replies_dto)))
+            all_comments_dto.append(self.get_complete_comment_dto(all_comment_reactions, comment, replies_dto))
 
-        return comments_dto
+        return all_comments_dto
 
     def get_post(self, post_id: int) -> GetPostDTO:
 
@@ -93,16 +113,16 @@ class PostStorage(PostStorage):
         post_reactions_count = post_reactions.count()
         post_reaction_types = list(post_reactions.distinct())
 
-        all_comment_replys = Comment.objects.select_related('user').filter(commented_on__in=Subquery(comment_ids)).values('id', 'commented_on', 'user', 'user__username', 'user__profile_pic_url', 'comment_text', 'commented_time')
+        all_comment_replies = Comment.objects.select_related('user').filter(commented_on__in=Subquery(comment_ids)).values('id', 'commented_on', 'user', 'user__username', 'user__profile_pic_url', 'comment_text', 'commented_time')
 
         all_comment_ids = Comment.objects.filter(post=post).values('id')
         all_comment_reactions = CommentReactions.objects.filter(comment_id__in=Subquery(all_comment_ids)).values('comment_id', 'reaction_type')
 
-        comment_replys = self.get_comment_replys(all_comment_replys)
+        comment_replies = self.get_comment_replies(all_comment_replies)
 
         comment_reactions = self.get_comment_reactions(all_comment_reactions)
 
-        comments_dto = self.get_comment_dto_list(comments_of_post, comment_replys, comment_reactions)
+        comments_dto = self.get_comment_dto_list(comments_of_post, comment_replies, comment_reactions)
 
         post_dto = PostDTO(post_id=post.id, user_id=post.user_id, post_content=post.post_content, created_time=post.posted_time)
         posted_user_dto = UserDTO(user_id=post.user_id, name=post.user.username, profile_pic_url=post.user.profile_pic_url)

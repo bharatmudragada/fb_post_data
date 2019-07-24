@@ -62,14 +62,14 @@ class TestGetPostResponse:
         assert response['type'] == reaction_dto.type
 
     @freeze_time("2019-08-18")
-    def test_get_comment_response(self):
+    def test_get_comment_response_with_out_replies(self):
 
         user_dto = UserDTO(user_id=1, name='user_1', profile_pic_url='https://user_1.png')
         comment_reactions_dto = ReactionDataDTO(count=3, type=["LOVE", "LIKE"])
         comment_dto = CommentDetailsDTO(comment_id=1, user=user_dto, commented_at=datetime.datetime.now(), comment_content="This is a comment", comment_reactions=comment_reactions_dto)
 
         json_presenter = JsonPresenter()
-        response = json_presenter.get_comment_response(comment_dto)
+        response = json_presenter.get_comment_response_with_out_replies(comment_dto)
 
         assert response['comment_id'] == comment_dto.comment_id
         assert response['commenter']['user_id'] == user_dto.user_id

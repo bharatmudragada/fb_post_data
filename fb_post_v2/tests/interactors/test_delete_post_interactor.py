@@ -16,7 +16,7 @@ class TestDeletePost(unittest.TestCase):
         presenter_mock = create_autospec(JsonPresenter)
 
         post_id = 1
-        response_data = {"status": "post deleted"}
+        response_data = None
 
         post_storage_mock.post_exists.return_value = True
         post_storage_mock.delete_post.return_value = response_data
@@ -27,7 +27,7 @@ class TestDeletePost(unittest.TestCase):
 
         post_storage_mock.post_exists.assert_called_once_with(post_id)
         post_storage_mock.delete_post.assert_called_once_with(post_id)
-        presenter_mock.get_delete_post_response.assert_called_once_with(response_data)
+        presenter_mock.get_delete_post_response.assert_called_once_with()
         assert response == response_data
 
     def test_post_does_not_exists(self):

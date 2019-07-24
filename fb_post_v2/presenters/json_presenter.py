@@ -24,7 +24,7 @@ class JsonPresenter(JsonPresenter):
     def get_reaction_response(self, reaction_dto: ReactionDataDTO):
         return {"count": reaction_dto.count, "type": reaction_dto.type}
 
-    def get_comment_response(self, comment_dto):
+    def get_comment_response_with_out_replies(self, comment_dto):
         comment_data = {}
         comment_data['comment_id'] = comment_dto.comment_id
         comment_data['commenter'] = self.get_user_response(comment_dto.user)
@@ -35,11 +35,11 @@ class JsonPresenter(JsonPresenter):
         return comment_data
 
     def get_comment_response_with_replies(self, comment_dto: CommentDetailsDTOWithReplies):
-        comment_data = self.get_comment_response(comment_dto)
+        comment_data = self.get_comment_response_with_out_replies(comment_dto)
 
         comment_data['replies'] = []
         for reply_dto in comment_dto.replies:
-            reply_data = self.get_comment_response(reply_dto)
+            reply_data = self.get_comment_response_with_out_replies(reply_dto)
             comment_data['replies'].append(reply_data)
 
         comment_data['replies_count'] = comment_dto.replies_count
@@ -105,29 +105,33 @@ class JsonPresenter(JsonPresenter):
         response = {"post_ids": post_ids_dto.post_ids}
         return response
 
+    def get_reaction_data(self, reaction):
+        reaction_data = {}
+        reaction_data['user_id'] = reaction.user_id
+        reaction_data['name'] = reaction.name
+        reaction_data['profile_pic'] = reaction.profile_pic_url
+        reaction_data['reaction'] = reaction.reaction_type
+        return reaction_data
+
     def get_reactions_to_post_response(self, reactions_dto: List[ReactionDetailsDTO]):
 
         reactions_list = []
         for reaction in reactions_dto:
-
-            reaction_data = {}
-            reaction_data['user_id'] = reaction.user_id
-            reaction_data['name'] = reaction.name
-            reaction_data['profile_pic'] = reaction.profile_pic_url
-            reaction_data['reaction'] = reaction.reaction_type
-            reactions_list.append(reaction_data)
+            reactions_list.append(self.get_reaction_data(reaction))
 
         return reactions_list
+
+    def get_reaction_metric_data(self, reaction_metric):
+        reaction_metric_data = {}
+        reaction_metric_data['reaction_type'] = reaction_metric.reaction_type
+        reaction_metric_data['count'] = reaction_metric.count
+        return reaction_metric_data
 
     def get_reaction_metrics_response(self, reactions_metrics_dto: List[ReactionMetricDTO]):
 
         reaction_metrics_list = []
-        for metric in reactions_metrics_dto:
-
-            reaction_metric_data = {}
-            reaction_metric_data['reaction_type'] = metric.reaction_type
-            reaction_metric_data['count'] = metric.count
-            reaction_metrics_list.append(reaction_metric_data)
+        for reaction_metric in reactions_metrics_dto:
+            reaction_metrics_list.append(self.get_reaction_metric_data(reaction_metric))
 
         return reaction_metrics_list
 
@@ -135,16 +139,19 @@ class JsonPresenter(JsonPresenter):
         response = {"count": total_reactions_dto.count}
         return response
 
+    def get_reply_data(self, reply):
+        reply_data = {}
+        reply_data['comment_id'] = reply.comment_id
+        reply_data['commenter'] = self.get_user_response(reply.user)
+        reply_data['commented_at'] = self.get_formatted_date(reply.commented_at)
+        reply_data['comment_content'] = reply.comment_content
+        return reply_data
+
     def get_replies_to_comment_response(self, replies_dto: List[RepliesDTO]):
 
         replies_list = []
         for reply in replies_dto:
-            reply_data = {}
-            reply_data['comment_id'] = reply.comment_id
-            reply_data['commenter'] = self.get_user_response(reply.user)
-            reply_data['commented_at'] = self.get_formatted_date(reply.commented_at)
-            reply_data['comment_content'] = reply.comment_content
-            replies_list.append(reply_data)
+            replies_list.append(self.get_reply_data(reply))
 
         return replies_list
 

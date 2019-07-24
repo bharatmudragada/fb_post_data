@@ -22,3 +22,4 @@ def api_wrapper(*args, **kwargs):
     from django.http.response import HttpResponse
     import json
     return HttpResponse(json.dumps(response), status=201)
+
