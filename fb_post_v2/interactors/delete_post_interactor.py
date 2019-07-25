@@ -9,9 +9,11 @@ class DeletePostInteractor:
         self.presenter = presenter
 
     def delete_post(self, post_id: int):
+
         post_exists = self.post_storage.post_exists(post_id)
         if post_exists:
             self.post_storage.delete_post(post_id)
             response = self.presenter.get_delete_post_response()
             return response
+
         return self.presenter.raise_post_does_not_exist_exception()

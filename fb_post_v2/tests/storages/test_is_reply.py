@@ -2,7 +2,7 @@ import unittest
 
 from mock import create_autospec, Mock
 from fb_post_v2.models.models import Comment
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from unittest.mock import patch
 
 
@@ -15,7 +15,7 @@ class TestIsReply(unittest.TestCase):
         comment.commented_on = None
         comment_mock.objects.get.return_value = comment
 
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         response = post_storage_object.is_reply(3)
 
         comment_mock.objects.get.assert_called_once_with(pk=3)
@@ -28,7 +28,7 @@ class TestIsReply(unittest.TestCase):
         comment.commented_on = 2
         comment_mock.objects.get.return_value = comment
 
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         response = post_storage_object.is_reply(3)
 
         comment_mock.objects.get.assert_called_once_with(pk=3)

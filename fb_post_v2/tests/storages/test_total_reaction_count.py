@@ -1,7 +1,7 @@
 import pytest
 from freezegun import freeze_time
 
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from fb_post_v2.models.models import *
 
 
@@ -19,7 +19,7 @@ class TestTotalReactionCount:
     @freeze_time("2019-08-18")
     def test_total_reaction_count_response(self, setup_data):
 
-        post_storage_object = PostStorage()
-        total_reactions_dto = post_storage_object.get_total_reaction_count()
+        post_storage_object = PostStorageImpl()
+        total_reactions_count = post_storage_object.get_total_reaction_count()
 
-        assert total_reactions_dto.count == 2
+        assert total_reactions_count == 2

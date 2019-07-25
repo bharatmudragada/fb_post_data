@@ -10,5 +10,8 @@ class GetReactionMetricsInteractor:
 
     def get_reaction_metrics(self, post_id: int):
         reaction_metrics_dto = self.post_storage.get_reaction_metrics(post_id)
-        response = self.presenter.get_reaction_metrics_response(reaction_metrics_dto)
+
+        response = self.presenter\
+            .get_reaction_metrics_response(reaction_metrics_dto)
+
         return response

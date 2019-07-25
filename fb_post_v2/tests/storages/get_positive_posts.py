@@ -1,7 +1,7 @@
 import pytest
 from freezegun import freeze_time
 
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from fb_post_v2.models.models import *
 
 
@@ -19,10 +19,8 @@ class TestGetPositivePosts:
     @freeze_time("2019-08-18")
     def test_get_positive_posts_response(self, setup_data):
 
-        post_storage_object = PostStorage()
-        post_ids_dto = post_storage_object.get_positive_posts()
-
-        post_ids = post_ids_dto.post_ids
+        post_storage_object = PostStorageImpl()
+        post_ids = post_storage_object.get_posts_with_more_positive_reactions()
 
         assert self.post.id in post_ids
         assert self.post_2.id in post_ids

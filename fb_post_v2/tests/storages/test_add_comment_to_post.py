@@ -1,7 +1,7 @@
 import pytest
 from freezegun import freeze_time
 
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from fb_post_v2.models.models import *
 
 
@@ -16,7 +16,7 @@ class TestAddCommentToPost:
     @freeze_time("2019-08-18")
     def test_add_comment_to_post_response(self, setup_data):
 
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         comment_dto = post_storage_object.add_comment_to_post(self.post.id, self.user_1.id, "This is comment")
 
         comment = Comment.objects.filter(post_id=self.post.id).first()

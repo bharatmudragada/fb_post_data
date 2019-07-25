@@ -2,7 +2,7 @@ from freezegun import freeze_time
 from fb_post_v2.interactors.storages.post_storage import RepliesDTO, UserDTO
 from datetime import datetime
 
-from fb_post_v2.presenters.json_presenter import JsonPresenter
+from fb_post_v2.presenters.json_presenter import JsonPresenterImpl
 
 
 class TestGetRepliesToCommentResponse:
@@ -16,8 +16,8 @@ class TestGetRepliesToCommentResponse:
         reply_two_dto = RepliesDTO(comment_id=2, user=user_two_dto, commented_at=datetime.now(), comment_content="This is second reply")
         replies_dto_list = [reply_one_dto, reply_two_dto]
 
-        json_presenter = JsonPresenter()
-        response = json_presenter.get_replies_to_comment_response(replies_dto_list)
+        json_presenter = JsonPresenterImpl()
+        response = json_presenter.get_comment_replies_response(replies_dto_list)
 
         reply_one_data = None
         for reply in response:

@@ -9,6 +9,7 @@ class GetUserPostsInteractor:
         self.presenter = presenter
 
     def get_user_posts(self, user_id: int, offset: int, length: int):
-        user_posts_dto = self.post_storage.get_user_posts(user_id, offset, length)
+        user_posts_dto = self.post_storage\
+            .get_user_posts(user_id, offset, length)
         response = self.presenter.get_user_posts_response(user_posts_dto)
         return response

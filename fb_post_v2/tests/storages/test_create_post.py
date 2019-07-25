@@ -1,7 +1,7 @@
 import pytest
 from freezegun import freeze_time
 
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from fb_post_v2.models.models import *
 
 
@@ -15,7 +15,7 @@ class TestCreatePost:
     @freeze_time("2019-08-18")
     def test_create_post_response(self, setup_data):
 
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         post_dto = post_storage_object.create_post("This is a testing post", self.user_1.id)
 
         post = Post.objects.get(pk=1)

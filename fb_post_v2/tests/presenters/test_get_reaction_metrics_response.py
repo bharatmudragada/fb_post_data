@@ -1,6 +1,6 @@
 from fb_post_v2.interactors.storages.post_storage import ReactionMetricDTO
 
-from fb_post_v2.presenters.json_presenter import JsonPresenter
+from fb_post_v2.presenters.json_presenter import JsonPresenterImpl
 
 
 class TestGetReactionsMetricResponse:
@@ -11,7 +11,7 @@ class TestGetReactionsMetricResponse:
         haha_reaction_metric_dto = ReactionMetricDTO(reaction_type="HAHA", count=3)
         reaction_metrics_dto = [love_reaction_metric_dto, haha_reaction_metric_dto]
 
-        json_presenter = JsonPresenter()
+        json_presenter = JsonPresenterImpl()
         response = json_presenter.get_reaction_metrics_response(reaction_metrics_dto)
 
         love_reaction_metric = None

@@ -3,7 +3,7 @@ import unittest
 from mock import create_autospec
 
 from fb_post_v2.models.models import Post
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from unittest.mock import patch
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -15,7 +15,7 @@ class TestPostExists(unittest.TestCase):
 
         post_mock.objects.get.side_effect = ObjectDoesNotExist
 
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         response = post_storage_object.post_exists(post_id=1)
 
         post_mock.objects.get.assert_called_once_with(pk=1)
@@ -27,7 +27,7 @@ class TestPostExists(unittest.TestCase):
         post = create_autospec(Post)
         post_mock.objects.get.return_value = post
 
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         response = post_storage_object.post_exists(post_id=1)
 
         post_mock.objects.get.assert_called_once_with(pk=1)

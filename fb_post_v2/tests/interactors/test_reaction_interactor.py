@@ -16,14 +16,14 @@ class TestReactToComment(unittest.TestCase):
         comment_reaction_dto = CommentReactionDTO(reaction_id=1, user_id=1, reaction_type="LOVE", comment_id=1)
 
         post_storage_mock.comment_reaction_exists.return_value = False
-        post_storage_mock.add_reaction_to_comment.return_value = comment_reaction_dto
+        post_storage_mock.add_comment_reaction.return_value = comment_reaction_dto
         presenter_mock.get_react_to_comment_response.return_value = {"reaction_id": 1}
 
         reaction_interactor = ReactionInteractor(post_storage_mock, presenter_mock)
         response = reaction_interactor.react_to_comment(1, 1, "LOVE")
 
         post_storage_mock.comment_reaction_exists.assert_called_once_with(1, 1)
-        post_storage_mock.add_reaction_to_comment.assert_called_once_with(1, 1, "LOVE")
+        post_storage_mock.add_comment_reaction.assert_called_once_with(1, 1, "LOVE")
         presenter_mock.get_react_to_comment_response.assert_called_once_with(comment_reaction_dto)
         assert response == {"reaction_id": 1}
 
@@ -80,14 +80,14 @@ class TestReactToPost(unittest.TestCase):
         post_reaction_dto = PostReactionDTO(reaction_id=1, user_id=1, reaction_type="LOVE", post_id=1)
 
         post_storage_mock.post_reaction_exists.return_value = False
-        post_storage_mock.add_reaction_to_post.return_value = post_reaction_dto
+        post_storage_mock.add_post_reaction.return_value = post_reaction_dto
         presenter_mock.get_react_to_post_response.return_value = {"reaction_id": 1}
 
         reaction_interactor = ReactionInteractor(post_storage_mock, presenter_mock)
         response = reaction_interactor.react_to_post(1, 1, "LOVE")
 
         post_storage_mock.post_reaction_exists.assert_called_once_with(1, 1)
-        post_storage_mock.add_reaction_to_post.assert_called_once_with(1, 1, "LOVE")
+        post_storage_mock.add_post_reaction.assert_called_once_with(1, 1, "LOVE")
         presenter_mock.get_react_to_post_response.assert_called_once_with(post_reaction_dto)
         assert response == {"reaction_id": 1}
 

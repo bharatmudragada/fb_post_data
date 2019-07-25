@@ -1,7 +1,7 @@
 import pytest
 from freezegun import freeze_time
 
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from fb_post_v2.models.models import *
 
 
@@ -19,7 +19,7 @@ class TestReactionsMetrics:
     @freeze_time("2019-08-18")
     def test_get_reaction_metrics(self, setup_data):
 
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         reaction_metrics_dto = post_storage_object.get_reaction_metrics(self.post.id)
 
         reaction_metrics_of_love = None

@@ -1,11 +1,11 @@
 import pytest
 from freezegun import freeze_time
 
-from fb_post_v2.interactors.storages.post_storage import GetPostDTO, PostDTO, UserDTO, ReactionDataDTO, \
-    CommentDetailsDTO, CommentDetailsDTOWithReplies
+from fb_post_v2.interactors.storages.post_storage import GetPostDTO, PostDTO, UserDTO, ReactionStatsDTO, \
+    CommentDetailsDTO, CommentDetailsWithRepliesDTO
 import datetime
 
-from fb_post_v2.presenters.json_presenter import JsonPresenter
+from fb_post_v2.presenters.json_presenter import JsonPresenterImpl
 
 
 class TestGetPostResponse:
@@ -13,7 +13,7 @@ class TestGetPostResponse:
     def setup_get_post_dto(self):
         post_dto = PostDTO(post_id=1, user_id=1, post_content='1', created_time=datetime.datetime.now())
         posted_user_dto = UserDTO(user_id=1, name='user_1', profile_pic_url='profile_pic')
-        post_reaction_dto = ReactionDataDTO(count=1, type=['HAHA'])
+        post_reaction_dto = ReactionStatsDTO(count=1, type=['HAHA'])
         comments_dto_list = []
         comments_count = 2
 
@@ -26,7 +26,7 @@ class TestGetPostResponse:
 
         get_post_dto = self.setup_get_post_dto()
 
-        json_presenter = JsonPresenter()
+        json_presenter = JsonPresenterImpl()
         response = json_presenter.get_post_response(get_post_dto)
 
         assert response['post_id'] == get_post_dto.post_details.post_id
@@ -44,8 +44,8 @@ class TestGetPostResponse:
 
         user_dto = UserDTO(user_id=1, name='user_1', profile_pic_url='https://user_1.png')
 
-        json_presenter = JsonPresenter()
-        response = json_presenter.get_user_response(user_dto)
+        json_presenter = JsonPresenterImpl()
+        response = json_presenter.convert_user_dto_to_dict(user_dto)
 
         assert response['user_id'] == user_dto.user_id
         assert response['name'] == user_dto.name
@@ -53,10 +53,10 @@ class TestGetPostResponse:
 
     def test_get_reaction_response(self):
 
-        reaction_dto = ReactionDataDTO(count=1, type=["LOVE", "WOW"])
+        reaction_dto = ReactionStatsDTO(count=1, type=["LOVE", "WOW"])
 
-        json_presenter = JsonPresenter()
-        response = json_presenter.get_reaction_response(reaction_dto)
+        json_presenter = JsonPresenterImpl()
+        response = json_presenter.convert_reaction_stats_dto_to_dict(reaction_dto)
 
         assert response['count'] == reaction_dto.count
         assert response['type'] == reaction_dto.type
@@ -65,11 +65,11 @@ class TestGetPostResponse:
     def test_get_comment_response_with_out_replies(self):
 
         user_dto = UserDTO(user_id=1, name='user_1', profile_pic_url='https://user_1.png')
-        comment_reactions_dto = ReactionDataDTO(count=3, type=["LOVE", "LIKE"])
+        comment_reactions_dto = ReactionStatsDTO(count=3, type=["LOVE", "LIKE"])
         comment_dto = CommentDetailsDTO(comment_id=1, user=user_dto, commented_at=datetime.datetime.now(), comment_content="This is a comment", comment_reactions=comment_reactions_dto)
 
-        json_presenter = JsonPresenter()
-        response = json_presenter.get_comment_response_with_out_replies(comment_dto)
+        json_presenter = JsonPresenterImpl()
+        response = json_presenter.convert_comment_with_out_replies_dto_to_dict(comment_dto)
 
         assert response['comment_id'] == comment_dto.comment_id
         assert response['commenter']['user_id'] == user_dto.user_id
@@ -84,13 +84,13 @@ class TestGetPostResponse:
     def test_get_comment_response_with_replies(self):
 
         user_dto = UserDTO(user_id=1, name='user_1', profile_pic_url='https://user_1.png')
-        comment_reactions_dto = ReactionDataDTO(count=2, type=["SAD", "LIKE"])
-        reply_reactions_dto = ReactionDataDTO(count=3, type=["LOVE", "LIKE"])
+        comment_reactions_dto = ReactionStatsDTO(count=2, type=["SAD", "LIKE"])
+        reply_reactions_dto = ReactionStatsDTO(count=3, type=["LOVE", "LIKE"])
         reply_dto = CommentDetailsDTO(comment_id=2, user=user_dto, commented_at=datetime.datetime.now(), comment_content="This is a reply", comment_reactions=reply_reactions_dto)
-        comment_dto = CommentDetailsDTOWithReplies(comment_id=1, user=user_dto, commented_at=datetime.datetime.now(), comment_content="This is a comment", comment_reactions=comment_reactions_dto, replies=[reply_dto], replies_count=1)
+        comment_dto = CommentDetailsWithRepliesDTO(comment_id=1, user=user_dto, commented_at=datetime.datetime.now(), comment_content="This is a comment", comment_reactions=comment_reactions_dto, replies=[reply_dto], replies_count=1)
 
-        json_presenter = JsonPresenter()
-        response = json_presenter.get_comment_response_with_replies(comment_dto)
+        json_presenter = JsonPresenterImpl()
+        response = json_presenter.convert_comment_with_replies_dto_to_dict(comment_dto)
 
         assert response['comment_id'] == comment_dto.comment_id
         assert response['commenter']['user_id'] == user_dto.user_id

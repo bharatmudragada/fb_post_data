@@ -4,7 +4,7 @@ from freezegun import freeze_time
 from fb_post_v2.interactors.storages.post_storage import PostDTO
 from datetime import datetime
 
-from fb_post_v2.presenters.json_presenter import JsonPresenter
+from fb_post_v2.presenters.json_presenter import JsonPresenterImpl
 
 
 class TestCreatePostResponse:
@@ -14,7 +14,7 @@ class TestCreatePostResponse:
 
         post_dto = PostDTO(post_id=1, user_id=1, post_content="This is a post", created_time=datetime.now())
 
-        json_presenter = JsonPresenter()
+        json_presenter = JsonPresenterImpl()
         response = json_presenter.get_create_post_response(post_dto)
 
         assert response["post_id"] == post_dto.post_id

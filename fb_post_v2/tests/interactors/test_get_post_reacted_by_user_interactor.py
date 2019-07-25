@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import create_autospec
 
-from fb_post_v2.interactors.get_posts_reacted_by_user_interactor import GetPostsReactedByUserInteractor
+from fb_post_v2.interactors.get_posts_reacted_by_user_interactor import GetUserReactedPostsInteractor
 from fb_post_v2.interactors.presenters.json_presenter import JsonPresenter
-from fb_post_v2.interactors.storages.post_storage import PostStorage, PostIdsDTO
+from fb_post_v2.interactors.storages.post_storage import PostStorage
 
 
 class TestGetPostsReactedByUser(unittest.TestCase):
@@ -16,13 +16,12 @@ class TestGetPostsReactedByUser(unittest.TestCase):
         post_ids = [1, 2, 3]
         response_data = {"post_ids": post_ids}
 
-        reactions_dto = PostIdsDTO(post_ids=post_ids)
-        post_storage_mock.get_posts_reacted_by_user.return_value = reactions_dto
-        presenter_mock.get_posts_reacted_by_user_response.return_value = response_data
+        post_storage_mock.get_user_reacted_posts.return_value = post_ids
+        presenter_mock.get_user_reacted_posts_response.return_value = response_data
 
-        get_reactions_to_post_interactor = GetPostsReactedByUserInteractor(post_storage_mock, presenter_mock)
+        get_reactions_to_post_interactor = GetUserReactedPostsInteractor(post_storage_mock, presenter_mock)
         response = get_reactions_to_post_interactor.get_posts_reacted_by_user(user_id)
 
-        post_storage_mock.get_posts_reacted_by_user.assert_called_once_with(user_id)
-        presenter_mock.get_posts_reacted_by_user_response.assert_called_once_with(reactions_dto)
+        post_storage_mock.get_user_reacted_posts.assert_called_once_with(user_id)
+        presenter_mock.get_user_reacted_posts_response.assert_called_once_with(post_ids)
         assert response == response_data

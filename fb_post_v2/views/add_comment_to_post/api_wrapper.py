@@ -2,8 +2,8 @@ from django_swagger_utils.drf_server.utils.decorator.interface_decorator \
     import validate_decorator
 
 from fb_post_v2.interactors.add_comment_interactor import AddCommentInteractor
-from fb_post_v2.presenters.json_presenter import JsonPresenter
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.presenters.json_presenter import JsonPresenterImpl
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from .validator_class import ValidatorClass
 
 
@@ -13,11 +13,12 @@ def api_wrapper(*args, **kwargs):
     user = kwargs["user"]
     request_data = kwargs["request_data"]
 
-    post_storage = PostStorage()
-    json_presenter = JsonPresenter()
+    post_storage = PostStorageImpl()
+    json_presenter = JsonPresenterImpl()
     interactor = AddCommentInteractor(post_storage, json_presenter)
 
-    response = interactor.add_comment_to_post(post_id, user.id, request_data["comment_text"])
+    response = interactor.add_comment_to_post(
+        post_id, user.id, request_data["comment_text"])
 
     from django.http.response import HttpResponse
     import json

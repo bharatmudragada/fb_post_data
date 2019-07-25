@@ -1,9 +1,10 @@
 from django_swagger_utils.drf_server.utils.decorator.interface_decorator \
     import validate_decorator
 
-from fb_post_v2.interactors.get_replies_to_comment_interactor import GetRepliesToCommentInteractor
-from fb_post_v2.presenters.json_presenter import JsonPresenter
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.interactors.get_replies_to_comment_interactor\
+    import GetCommentRepliesInteractor
+from fb_post_v2.presenters.json_presenter import JsonPresenterImpl
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from .validator_class import ValidatorClass
 
 
@@ -14,11 +15,11 @@ def api_wrapper(*args, **kwargs):
     offset = request_query_params.offset
     limit = request_query_params.limit
 
-    post_storage = PostStorage()
-    json_presenter = JsonPresenter()
-    interactor = GetRepliesToCommentInteractor(post_storage, json_presenter)
+    post_storage = PostStorageImpl()
+    json_presenter = JsonPresenterImpl()
+    interactor = GetCommentRepliesInteractor(post_storage, json_presenter)
 
-    response = interactor.get_replies_to_comment(comment_id, offset, limit)
+    response = interactor.get_comment_replies(comment_id, offset, limit)
 
     from django.http.response import HttpResponse
     import json

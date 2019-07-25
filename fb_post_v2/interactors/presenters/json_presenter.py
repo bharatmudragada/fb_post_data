@@ -1,9 +1,9 @@
 import abc
 
-from fb_post_v2.interactors.storages.post_storage import PostDTO, GetPostDTO, CommentDTO, PostReactionDTO, \
-    CommentReactionDTO, PostIdsDTO, ReactionDetailsDTO, TotalReactionsDTO, \
+from fb_post_v2.interactors.storages.post_storage import PostDTO, GetPostDTO,\
+    CommentDTO, PostReactionDTO, CommentReactionDTO, UserReactionDTO, \
     RepliesDTO, ReactionMetricDTO
-from typing import List, Dict, Optional
+from typing import List, Optional
 
 
 class JsonPresenter:
@@ -27,11 +27,13 @@ class JsonPresenter:
         pass
 
     @abc.abstractmethod
-    def get_react_to_post_response(self, post_reaction_dto: Optional[PostReactionDTO]):
+    def get_react_to_post_response(
+            self, post_reaction_dto: Optional[PostReactionDTO]):
         pass
 
     @abc.abstractmethod
-    def get_react_to_comment_response(self, comment_reaction_dto: Optional[CommentReactionDTO]):
+    def get_react_to_comment_response(
+            self, comment_reaction_dto: Optional[CommentReactionDTO]):
         pass
 
     @abc.abstractmethod
@@ -39,27 +41,29 @@ class JsonPresenter:
         pass
 
     @abc.abstractmethod
-    def get_positive_posts_response(self, post_ids_dto: PostIdsDTO):
+    def get_posts_with_more_positive_reactions_response(
+            self, post_ids: List[int]):
         pass
 
     @abc.abstractmethod
-    def get_posts_reacted_by_user_response(self, post_ids_dto: PostIdsDTO):
+    def get_user_reacted_posts_response(self, post_ids: List[int]):
         pass
 
     @abc.abstractmethod
-    def get_reactions_to_post_response(self, reactions_dto: List[ReactionDetailsDTO]):
+    def get_post_reactions_response(self, reactions_dto: List[UserReactionDTO]):
         pass
 
     @abc.abstractmethod
-    def get_reaction_metrics_response(self, reaction_metrics_dto: List[ReactionMetricDTO]):
+    def get_reaction_metrics_response(
+            self, reaction_metrics_dto: List[ReactionMetricDTO]):
         pass
 
     @abc.abstractmethod
-    def get_total_reaction_count_response(self, total_reactions_dto: TotalReactionsDTO):
+    def get_total_reaction_count_response(self, total_reactions_count: int):
         pass
 
     @abc.abstractmethod
-    def get_replies_to_comment_response(self, replies_dto: List[RepliesDTO]):
+    def get_comment_replies_response(self, replies_dto: List[RepliesDTO]):
         pass
 
     @abc.abstractmethod

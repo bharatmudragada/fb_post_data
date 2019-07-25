@@ -1,7 +1,7 @@
 import pytest
 from freezegun import freeze_time
 
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.storages.post_storage import PostStorageImpl
 from fb_post_v2.models.models import *
 
 
@@ -20,7 +20,7 @@ class TestGetUserPosts:
     @freeze_time("2019-08-18")
     def test_get_user_posts_response_of_same_user(self, setup_data):
 
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         user_posts_dto = post_storage_object.get_user_posts(user_id=self.user_1.id, offset=0, length=2)
 
         post_ids = [post.post_details.post_id for post in user_posts_dto]
@@ -31,7 +31,7 @@ class TestGetUserPosts:
     @pytest.mark.django_db
     @freeze_time("2019-08-18")
     def test_get_user_posts_response_of_different_user(self, setup_data):
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         user_posts_dto = post_storage_object.get_user_posts(user_id=self.user_1.id, offset=0, length=2)
 
         post_ids = [post.post_details.post_id for post in user_posts_dto]
@@ -41,7 +41,7 @@ class TestGetUserPosts:
     @pytest.mark.django_db
     @freeze_time("2019-08-18")
     def test_get_user_posts_response_offset(self, setup_data):
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         user_posts_dto = post_storage_object.get_user_posts(user_id=self.user_1.id, offset=1, length=2)
 
         post_ids = [post.post_details.post_id for post in user_posts_dto]
@@ -52,7 +52,7 @@ class TestGetUserPosts:
     @pytest.mark.django_db
     @freeze_time("2019-08-18")
     def test_get_user_posts_response_length(self, setup_data):
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         user_posts_dto = post_storage_object.get_user_posts(user_id=self.user_1.id, offset=0, length=1)
 
         post_ids = [post.post_details.post_id for post in user_posts_dto]

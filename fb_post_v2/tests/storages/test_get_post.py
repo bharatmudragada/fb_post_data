@@ -3,7 +3,7 @@ from datetime import datetime
 from freezegun import freeze_time
 
 from fb_post_v2.models.models import *
-from fb_post_v2.storages.post_storage import PostStorage
+from fb_post_v2.storages.post_storage import PostStorageImpl
 
 
 class TestGetPost:
@@ -35,7 +35,7 @@ class TestGetPost:
     @pytest.mark.django_db
     def test_get_post(self, setup_data):
 
-        post_storage_object = PostStorage()
+        post_storage_object = PostStorageImpl()
         get_post_dto = post_storage_object.get_post(post_id=1)
 
         post_details = get_post_dto.post_details
@@ -96,8 +96,8 @@ class TestGetPost:
     def test_get_user_dto(self):
 
         comment = {"user": 1, "user__username": "name", "user__profile_pic_url": "http://profile_pic"}
-        post_storage_object = PostStorage()
-        user_dto = post_storage_object.get_user_dto(comment)
+        post_storage_object = PostStorageImpl()
+        user_dto = post_storage_object.convert_user_dict_to_dto(comment)
 
         assert user_dto.user_id == comment['user']
         assert user_dto.name == comment['user__username']
@@ -106,8 +106,8 @@ class TestGetPost:
     def test_get_reactions_dto(self):
 
         comment_reactions = {"count": 1, "type": ["WOW", "LOVE"]}
-        post_storage_object = PostStorage()
-        reaction_dto = post_storage_object.get_reaction_dto(comment_reactions)
+        post_storage_object = PostStorageImpl()
+        reaction_dto = post_storage_object.convert_reaction_stats_dict_to_dto(comment_reactions)
 
         assert reaction_dto.count == comment_reactions["count"]
         assert reaction_dto.type == comment_reactions["type"]
@@ -117,8 +117,8 @@ class TestGetPost:
         comment_reactions = {"count": 1, "type": ["WOW", "LOVE"]}
         comment = {"id": 1, "commented_time": datetime.now(), "comment_text": "This is comment data", "user": 1, "user__username": "name", "user__profile_pic_url": "http://profile_pic"}
 
-        post_storage_object = PostStorage()
-        comment_dto = post_storage_object.get_comment_dto_with_out_replies(comment, comment_reactions)
+        post_storage_object = PostStorageImpl()
+        comment_dto = post_storage_object.convert_comment_dict_to_comment_details_dto(comment, comment_reactions)
 
         assert comment_dto.comment_id == comment['id']
         assert comment_dto.commented_at == comment['commented_time']
@@ -140,8 +140,8 @@ class TestGetPost:
         replies = []
         replies_count = 0
 
-        post_storage_object = PostStorage()
-        comment_dto_with_replies = post_storage_object.get_comment_dto_with_replies(comment, comment_reactions, replies, replies_count)
+        post_storage_object = PostStorageImpl()
+        comment_dto_with_replies = post_storage_object.convert_comment_dict_to_comment_details_with_replies_dto(comment, comment_reactions, replies, replies_count)
 
         assert comment_dto_with_replies.comment_id == comment['id']
         assert comment_dto_with_replies.commented_at == comment['commented_time']
@@ -159,12 +159,12 @@ class TestGetPost:
         assert comment_dto_with_replies.replies == replies
         assert comment_dto_with_replies.replies_count == replies_count
 
-    def test_get_comment_replies(self):
+    def test_get_all_comment_replies(self):
 
         all_comment_replies = [{"comment_id": 4, "commented_on": 1}, {"comment_id": 5, "commented_on": 1}, {"comment_id": 6, "commented_on": 2}]
 
-        post_storage_object = PostStorage()
-        comment_replies = post_storage_object.get_comment_replies(all_comment_replies)
+        post_storage_object = PostStorageImpl()
+        comment_replies = post_storage_object.get_comment_wise_replies(all_comment_replies)
 
         reply_ids_of_comment_one = [replies['comment_id'] for replies in comment_replies[1]]
         assert 4 in reply_ids_of_comment_one
@@ -180,8 +180,8 @@ class TestGetPost:
 
         all_comment_reactions = [{'comment_id': 1, 'reaction_type': "WOW"}, {'comment_id': 1, 'reaction_type': "WOW"}, {'comment_id': 2, 'reaction_type': "SAD"}, {'comment_id': 2, 'reaction_type': "WOW"}]
 
-        post_storage_object = PostStorage()
-        comment_reactions = post_storage_object.get_comment_reactions(all_comment_reactions)
+        post_storage_object = PostStorageImpl()
+        comment_reactions = post_storage_object.get_comment_wise_reactions(all_comment_reactions)
 
         comment_one_reactions = comment_reactions[1]
         assert comment_one_reactions['count'] == 2
@@ -206,8 +206,8 @@ class TestGetPost:
 
         comment_reactions = {1: {'count': 3, 'type': ['WOW', 'SAD']}, 3: {'count': 1, 'type': ['HAHA']}}
 
-        post_storage_object = PostStorage()
-        comments_dto = post_storage_object.get_comment_dto_list(comments_of_post, comment_replies, comment_reactions)
+        post_storage_object = PostStorageImpl()
+        comments_dto = post_storage_object.convert_comments_dict_to_comment_dto_list(comments_of_post, comment_replies, comment_reactions)
 
         comment_ids = [comment.comment_id for comment in comments_dto]
 
