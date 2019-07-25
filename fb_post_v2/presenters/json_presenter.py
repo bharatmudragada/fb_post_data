@@ -4,9 +4,13 @@ from django_swagger_utils.drf_server.exceptions import BadRequest
 import datetime
 
 from fb_post_v2.interactors.presenters.json_presenter import JsonPresenter
-from fb_post_v2.interactors.storages.post_storage import RepliesDTO, ReactionMetricDTO, \
-    UserReactionDTO, GetPostDTO, CommentReactionDTO, PostReactionDTO, CommentDTO, PostDTO, UserDTO, \
-    ReactionStatsDTO, CommentDetailsWithRepliesDTO
+from fb_post_v2.interactors.storages.post_storage import RepliesDTO, \
+    ReactionMetricDTO, \
+    UserReactionDTO, GetPostDTO, CommentReactionDTO, PostReactionDTO, \
+    CommentDTO, PostDTO, UserDTO, \
+    ReactionStatsDTO, CommentReactionStatsDTO
+
+from collections import defaultdict
 
 
 class JsonPresenterImpl(JsonPresenter):
@@ -20,61 +24,147 @@ class JsonPresenterImpl(JsonPresenter):
         return datetime_object.strftime('%y-%m-%d %H:%M:%S.%f')
 
     @staticmethod
-    def convert_user_dto_to_dict(user_dto: UserDTO):
-        return {"user_id": user_dto.user_id, "name": user_dto.name,
-                "profile_pic_url": user_dto.profile_pic_url}
+    def get_user_wise_user_dict(users_dto_list: List[UserDTO]):
+
+        user_wise_user_dict = {}
+        for user_dto in users_dto_list:
+            user_dict = {
+                "user_id": user_dto.user_id, "name": user_dto.name,
+                "profile_pic_url": user_dto.profile_pic_url
+            }
+            user_wise_user_dict[user_dto.user_id] = user_dict
+
+        return user_wise_user_dict
 
     @staticmethod
     def convert_reaction_stats_dto_to_dict(reaction_dto: ReactionStatsDTO):
         return {"count": reaction_dto.count, "type": reaction_dto.type}
 
-    def convert_comment_with_out_replies_dto_to_dict(self, comment_dto):
-        comment_data = {}
-        comment_data['comment_id'] = comment_dto.comment_id
-        comment_data['commenter'] = self.\
-            convert_user_dto_to_dict(comment_dto.user)
-        comment_data['commented_at'] = self\
-            .get_formatted_date(comment_dto.commented_at)
-        comment_data['comment_content'] = comment_dto.comment_content
-        comment_data['reactions'] = self\
-            .convert_reaction_stats_dto_to_dict(comment_dto.comment_reactions)
+    @staticmethod
+    def get_comment_wise_comment_reaction_stats_dict(
+            all_comment_reaction_stats: List[CommentReactionStatsDTO]):
 
-        return comment_data
+        comments_wise_comment_reactions_dict = {}
+        for comment_reaction_stats_dto in all_comment_reaction_stats:
+            comment_reaction_stats_dict = {
+                "count": comment_reaction_stats_dto.count,
+                "type": comment_reaction_stats_dto.type
+            }
+            comments_wise_comment_reactions_dict[
+                comment_reaction_stats_dto.comment_id] \
+                = comment_reaction_stats_dict
 
-    def convert_comment_with_replies_dto_to_dict(
-            self, comment_dto: CommentDetailsWithRepliesDTO):
-        comment_data = self\
-            .convert_comment_with_out_replies_dto_to_dict(comment_dto)
+        return comments_wise_comment_reactions_dict
 
-        comment_data['replies'] = []
-        for reply_dto in comment_dto.replies:
-            reply_data = self\
-                .convert_comment_with_out_replies_dto_to_dict(reply_dto)
-            comment_data['replies'].append(reply_data)
+    def convert_comment_dto_to_dict(
+            self, comment_dto, user_dict, reaction_stats_dict):
+        comment_dict = {
+            "comment_id": comment_dto.comment_id,
+            "commenter": user_dict,
+            "commented_at": self.get_formatted_date(comment_dto.commented_at),
+            "comment_content": comment_dto.comment_content,
+            "reactions": reaction_stats_dict
+        }
+        return comment_dict
 
-        comment_data['replies_count'] = comment_dto.replies_count
+    @staticmethod
+    def add_reply_to_all_comment_replies_dict(
+            reply_dict, comment_wise_comment_replies_dict, commented_on_id):
 
-        return comment_data
+        comment_replies = comment_wise_comment_replies_dict[commented_on_id]
+        comment_replies.append(reply_dict)
+
+        return comment_wise_comment_replies_dict
+
+    @staticmethod
+    def get_reaction_stats_dict(comment_wise_comment_reaction_stats, comment_id):
+
+        try:
+            reaction_stats_dict = \
+                comment_wise_comment_reaction_stats[comment_id]
+        except KeyError:
+            reaction_stats_dict = {"count": 0, "type": []}
+
+        return reaction_stats_dict
+
+    def get_comment_wise_details_and_replies(
+            self, all_comments, user_wise_user_dict, comment_wise_comment_dict):
+
+        comment_wise_comments_dict = {}
+        comment_wise_replies_dict = defaultdict(list)
+
+        for comment_dto in all_comments:
+
+            user_dict = user_wise_user_dict[comment_dto.user_id]
+            reaction_stats_dict = self.get_reaction_stats_dict(
+                comment_wise_comment_dict, comment_dto.comment_id)
+
+            comment_dict = self.convert_comment_dto_to_dict(
+                comment_dto, user_dict, reaction_stats_dict)
+
+            if comment_dto.commented_on_id is None:
+                comment_wise_comments_dict[comment_dto.comment_id] = comment_dict
+            else:
+                comment_wise_replies_dict = self\
+                    .add_reply_to_all_comment_replies_dict(
+                        comment_dict, comment_wise_replies_dict,
+                        comment_dto.commented_on_id
+                    )
+
+        return comment_wise_comments_dict, comment_wise_replies_dict
+
+    @staticmethod
+    def add_replies_and_replies_count_to_comment_dict(
+            comment_dict, replies_list):
+
+        comment_dict['replies'] = replies_list
+        comment_dict['replies_count'] = len(replies_list)
+        return comment_dict
+
+    def get_all_comment_details_list(
+            self, all_comments, all_comment_reaction_stats, all_users_dict):
+
+        comment_wise_comment_reaction_dict = \
+            self.get_comment_wise_comment_reaction_stats_dict(
+                all_comment_reaction_stats)
+
+        comment_wise_comments_dict, comment_wise_comment_replies_dict = \
+            self.get_comment_wise_details_and_replies(
+                all_comments, all_users_dict, comment_wise_comment_reaction_dict)
+
+        all_comment_details_list = []
+
+        for comment_id in comment_wise_comments_dict:
+            replies_list = comment_wise_comment_replies_dict[comment_id]
+
+            comment_wise_comments_dict[comment_id] = \
+                self.add_replies_and_replies_count_to_comment_dict(
+                    comment_wise_comments_dict[comment_id], replies_list)
+
+            all_comment_details_list.append(
+                comment_wise_comments_dict[comment_id])
+
+        return all_comment_details_list
 
     def get_post_response(self, get_post_dto: GetPostDTO):
+        all_users_dict = self.\
+            get_user_wise_user_dict(get_post_dto.users)
 
         post_data = {}
-        post_data["post_id"] = get_post_dto.post_details.post_id
-        post_data["posted_by"] = self\
-            .convert_user_dto_to_dict(get_post_dto.posted_by)
+        post_details_dto = get_post_dto.post_details
+        post_data["post_id"] = post_details_dto.post_id
+        post_data["posted_by"] = all_users_dict[post_details_dto.user_id]
         post_data["posted_at"] = self\
-            .get_formatted_date(get_post_dto.post_details.created_time)
-        post_data["post_content"] = get_post_dto.post_details.post_content
+            .get_formatted_date(post_details_dto.created_time)
+        post_data["post_content"] = post_details_dto.post_content
         post_data["reactions"] = self\
-            .convert_reaction_stats_dto_to_dict(get_post_dto.post_reaction_data)
+            .convert_reaction_stats_dto_to_dict(get_post_dto.post_reaction_stats)
 
-        post_data["comments"] = []
-        for comment in get_post_dto.comments:
-            comment_data = self\
-                .convert_comment_with_replies_dto_to_dict(comment)
-            post_data["comments"].append(comment_data)
+        post_data["comments"] = self.get_all_comment_details_list(
+            get_post_dto.comments, get_post_dto.all_comment_reaction_stats,
+            all_users_dict)
 
-        post_data["comments_count"] = get_post_dto.comments_count
+        post_data["comments_count"] = len(post_data["comments"])
 
         return post_data
 
@@ -124,11 +214,12 @@ class JsonPresenterImpl(JsonPresenter):
 
     @staticmethod
     def convert_reaction_dto_to_dict(reaction):
-        reaction_data = {}
-        reaction_data['user_id'] = reaction.user_id
-        reaction_data['name'] = reaction.name
-        reaction_data['profile_pic'] = reaction.profile_pic_url
-        reaction_data['reaction'] = reaction.reaction_type
+        reaction_data = {
+            'user_id': reaction.user_id,
+            'name': reaction.name,
+            'profile_pic': reaction.profile_pic_url,
+            'reaction': reaction.reaction_type
+        }
         return reaction_data
 
     def get_post_reactions_response(self, reactions_dto: List[UserReactionDTO]):
@@ -141,10 +232,11 @@ class JsonPresenterImpl(JsonPresenter):
 
     @staticmethod
     def convert_reaction_metric_dto_to_dict(reaction_metric):
-        reaction_metric_data = {}
-        reaction_metric_data['reaction_type'] = reaction_metric.reaction_type
-        reaction_metric_data['count'] = reaction_metric.count
-        return reaction_metric_data
+        reaction_metric_dict = {
+            'reaction_type': reaction_metric.reaction_type,
+            'count': reaction_metric.count
+        }
+        return reaction_metric_dict
 
     def get_reaction_metrics_response(
             self, reactions_metrics_dto: List[ReactionMetricDTO]):
@@ -160,13 +252,23 @@ class JsonPresenterImpl(JsonPresenter):
         response = {"count": total_reactions_count}
         return response
 
+    @staticmethod
+    def convert_user_dto_to_dict(user_dto: UserDTO):
+        user_dict = {
+            "user_id": user_dto.user_id,
+            "name": user_dto.name,
+            "profile_pic_url": user_dto.profile_pic_url
+        }
+        return user_dict
+
     def convert_reply_dto_to_dict(self, reply):
-        reply_data = {}
-        reply_data['comment_id'] = reply.comment_id
-        reply_data['commenter'] = self.convert_user_dto_to_dict(reply.user)
-        reply_data['commented_at'] = self.get_formatted_date(reply.commented_at)
-        reply_data['comment_content'] = reply.comment_content
-        return reply_data
+        reply_dict = {
+            'comment_id': reply.comment_id,
+            'commenter': self.convert_user_dto_to_dict(reply.user),
+            'commented_at': self.get_formatted_date(reply.commented_at),
+            'comment_content': reply.comment_content
+        }
+        return reply_dict
 
     def get_comment_replies_response(self, replies_dto: List[RepliesDTO]):
 
@@ -177,13 +279,13 @@ class JsonPresenterImpl(JsonPresenter):
         return replies_list
 
     def raise_not_a_comment_exception(self):
-        raise BadRequest(message='Invalid comment id'
-                         , res_status='INVALID_COMMENT_ID')
+        raise BadRequest(message='Invalid comment id',
+                         res_status='INVALID_COMMENT_ID')
 
     def get_delete_post_response(self):
         response = {"status": "Post Deleted"}
         return response
 
     def raise_post_does_not_exist_exception(self):
-        raise BadRequest(message='Invalid post id'
-                         , res_status='INVALID_POST_ID')
+        raise BadRequest(message='Invalid post id',
+                         res_status='INVALID_POST_ID')

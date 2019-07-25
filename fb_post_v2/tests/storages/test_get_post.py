@@ -16,7 +16,7 @@ class TestGetPost:
         self.user_3 = User.objects.create(
             username="user_7", profile_pic_url="https://user_3")
         self.user_4 = User.objects.create(
-            sername="user_8", profile_pic_url="https://user_4")
+            username="user_8", profile_pic_url="https://user_4")
 
     def setup_comment_data(self):
         self.comment = Comment.objects.create(

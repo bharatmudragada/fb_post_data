@@ -52,27 +52,17 @@ class CommentReactionDTO(ReactionDTO):
 
 
 @dataclass
-class CommentDetailsDTO:
+class CommentReactionStatsDTO(ReactionStatsDTO):
     comment_id: int
-    user: UserDTO
-    commented_at: datetime
-    comment_content: str
-    comment_reactions: ReactionStatsDTO
-
-
-@dataclass
-class CommentDetailsWithRepliesDTO(CommentDetailsDTO):
-    replies: List[CommentDetailsDTO]
-    replies_count: int
 
 
 @dataclass
 class GetPostDTO:
     post_details: PostDTO
-    posted_by: UserDTO
-    post_reaction_data: ReactionStatsDTO
-    comments: List[CommentDetailsWithRepliesDTO]
-    comments_count: int
+    post_reaction_stats: ReactionStatsDTO
+    comments: List[CommentDTO]
+    all_comment_reaction_stats: List[CommentReactionStatsDTO]
+    users: List[UserDTO]
 
 
 @dataclass
