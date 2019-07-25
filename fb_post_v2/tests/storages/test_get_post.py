@@ -9,25 +9,39 @@ from fb_post_v2.storages.post_storage import PostStorageImpl
 class TestGetPost:
 
     def setup_user_data(self):
-        self.user_1 = User.objects.create(username="user_5", profile_pic_url="https://user_1")
-        self.user_2 = User.objects.create(username="user_6", profile_pic_url="https://user_2")
-        self.user_3 = User.objects.create(username="user_7", profile_pic_url="https://user_3")
-        self.user_4 = User.objects.create(username="user_8", profile_pic_url="https://user_4")
+        self.user_1 = User.objects.create(
+            username="user_5", profile_pic_url="https://user_1")
+        self.user_2 = User.objects.create(
+            username="user_6", profile_pic_url="https://user_2")
+        self.user_3 = User.objects.create(
+            username="user_7", profile_pic_url="https://user_3")
+        self.user_4 = User.objects.create(
+            sername="user_8", profile_pic_url="https://user_4")
 
     def setup_comment_data(self):
-        self.comment = Comment.objects.create(post=self.post, commented_on=None, user=self.user_1, comment_text="This is comment")
-        self.reply = Comment.objects.create(post=self.post, commented_on=self.comment, user=self.user_2, comment_text="This is reply")
-        self.comment_reaction = CommentReactions.objects.create(comment=self.comment, user=self.user_2, reaction_type="LOVE")
-        self.comment_reaction_2 = CommentReactions.objects.create(comment=self.comment, user=self.user_3, reaction_type="LOVE")
-        self.comment_reaction_3 = CommentReactions.objects.create(comment=self.comment, user=self.user_4, reaction_type="WOW")
+        self.comment = Comment.objects.create(
+            post=self.post, commented_on=None, user=self.user_1,
+            comment_text="This is comment")
+        self.reply = Comment.objects.create(
+            post=self.post, commented_on=self.comment, user=self.user_2,
+            comment_text="This is reply")
+        self.comment_reaction = CommentReactions.objects.create(
+            comment=self.comment, user=self.user_2, reaction_type="LOVE")
+        self.comment_reaction_2 = CommentReactions.objects.create(
+            comment=self.comment, user=self.user_3, reaction_type="LOVE")
+        self.comment_reaction_3 = CommentReactions.objects.create(
+            comment=self.comment, user=self.user_4, reaction_type="WOW")
 
     @freeze_time("2019-08-18")
     @pytest.fixture
     def setup_data(self):
         self.setup_user_data()
-        self.post = Post.objects.create(user=self.user_1, post_content="This is first post")
-        self.post_reaction_1 = PostReactions.objects.create(post=self.post, user=self.user_2, reaction_type="WOW")
-        self.post_reaction_2 = PostReactions.objects.create(post=self.post, user=self.user_3, reaction_type="WOW")
+        self.post = Post.objects.create(user=self.user_1,
+                                        post_content="This is first post")
+        self.post_reaction_1 = PostReactions.objects.create(
+            post=self.post, user=self.user_2, reaction_type="WOW")
+        self.post_reaction_2 = PostReactions.objects.create(
+            post=self.post, user=self.user_3, reaction_type="WOW")
         self.setup_comment_data()
 
         return self.post
@@ -74,7 +88,8 @@ class TestGetPost:
         assert comment_reactions.count == 3
         assert comment_reactions.type.sort() == ["LOVE", "WOW"].sort()
 
-        assert self.reply.id in [reply.comment_id for reply in comment_data.replies]
+        assert self.reply.id in [reply.comment_id for reply in
+                                 comment_data.replies]
 
         reply_data = None
         for reply in comment_data.replies:
@@ -95,7 +110,8 @@ class TestGetPost:
 
     def test_get_user_dto(self):
 
-        comment = {"user": 1, "user__username": "name", "user__profile_pic_url": "http://profile_pic"}
+        comment = {"user": 1, "user__username": "name",
+                   "user__profile_pic_url": "http://profile_pic"}
         post_storage_object = PostStorageImpl()
         user_dto = post_storage_object.convert_user_dict_to_dto(comment)
 
@@ -107,7 +123,8 @@ class TestGetPost:
 
         comment_reactions = {"count": 1, "type": ["WOW", "LOVE"]}
         post_storage_object = PostStorageImpl()
-        reaction_dto = post_storage_object.convert_reaction_stats_dict_to_dto(comment_reactions)
+        reaction_dto = post_storage_object\
+            .convert_reaction_stats_dict_to_dto(comment_reactions)
 
         assert reaction_dto.count == comment_reactions["count"]
         assert reaction_dto.type == comment_reactions["type"]
@@ -115,10 +132,14 @@ class TestGetPost:
     @freeze_time("2019-08-18")
     def test_get_comment_dto_with_out_replies(self):
         comment_reactions = {"count": 1, "type": ["WOW", "LOVE"]}
-        comment = {"id": 1, "commented_time": datetime.now(), "comment_text": "This is comment data", "user": 1, "user__username": "name", "user__profile_pic_url": "http://profile_pic"}
+        comment = {"id": 1, "commented_time": datetime.now(), "comment_text":
+            "This is comment data", "user": 1, "user__username": "name",
+                   "user__profile_pic_url": "http://profile_pic"}
 
         post_storage_object = PostStorageImpl()
-        comment_dto = post_storage_object.convert_comment_dict_to_comment_details_dto(comment, comment_reactions)
+        comment_dto = post_storage_object\
+            .convert_comment_dict_to_comment_details_dto(
+            comment, comment_reactions)
 
         assert comment_dto.comment_id == comment['id']
         assert comment_dto.commented_at == comment['commented_time']
@@ -136,16 +157,22 @@ class TestGetPost:
     @freeze_time("2019-08-18")
     def test_get_comment_dto_with_replies(self):
         comment_reactions = {"count": 1, "type": ["WOW", "LOVE"]}
-        comment = {"id": 1, "commented_time": datetime.now(), "comment_text": "This is comment data", "user": 1, "user__username": "name", "user__profile_pic_url": "http://profile_pic"}
+        comment = {"id": 1, "commented_time": datetime.now(),
+                   "comment_text": "This is comment data", "user": 1,
+                   "user__username": "name", "user__profile_pic_url":
+                       "http://profile_pic"}
         replies = []
         replies_count = 0
 
         post_storage_object = PostStorageImpl()
-        comment_dto_with_replies = post_storage_object.convert_comment_dict_to_comment_details_with_replies_dto(comment, comment_reactions, replies, replies_count)
+        comment_dto_with_replies = post_storage_object.\
+            convert_comment_dict_to_comment_details_with_replies_dto(
+            comment, comment_reactions, replies, replies_count)
 
         assert comment_dto_with_replies.comment_id == comment['id']
         assert comment_dto_with_replies.commented_at == comment['commented_time']
-        assert comment_dto_with_replies.comment_content == comment['comment_text']
+        assert comment_dto_with_replies.comment_content == \
+               comment['comment_text']
 
         comment_user = comment_dto_with_replies.user
         assert comment_user.user_id == comment['user']
@@ -161,27 +188,36 @@ class TestGetPost:
 
     def test_get_all_comment_replies(self):
 
-        all_comment_replies = [{"comment_id": 4, "commented_on": 1}, {"comment_id": 5, "commented_on": 1}, {"comment_id": 6, "commented_on": 2}]
+        all_comment_replies = [{"comment_id": 4, "commented_on": 1},
+                               {"comment_id": 5, "commented_on": 1},
+                               {"comment_id": 6, "commented_on": 2}]
 
         post_storage_object = PostStorageImpl()
-        comment_replies = post_storage_object.get_comment_wise_replies(all_comment_replies)
+        comment_replies = post_storage_object.get_comment_wise_replies(
+            all_comment_replies)
 
-        reply_ids_of_comment_one = [replies['comment_id'] for replies in comment_replies[1]]
+        reply_ids_of_comment_one = [replies['comment_id'] for replies in
+                                    comment_replies[1]]
         assert 4 in reply_ids_of_comment_one
         assert 5 in reply_ids_of_comment_one
         assert 6 not in reply_ids_of_comment_one
 
-        reply_ids_of_comment_two = [replies['comment_id'] for replies in comment_replies[2]]
+        reply_ids_of_comment_two = [replies['comment_id'] for replies in
+                                    comment_replies[2]]
         assert 6 in reply_ids_of_comment_two
         assert 4 not in reply_ids_of_comment_two
         assert 5 not in reply_ids_of_comment_two
 
     def test_get_comment_reactions(self):
 
-        all_comment_reactions = [{'comment_id': 1, 'reaction_type': "WOW"}, {'comment_id': 1, 'reaction_type': "WOW"}, {'comment_id': 2, 'reaction_type': "SAD"}, {'comment_id': 2, 'reaction_type': "WOW"}]
+        all_comment_reactions = [{'comment_id': 1, 'reaction_type': "WOW"},
+                                 {'comment_id': 1, 'reaction_type': "WOW"},
+                                 {'comment_id': 2, 'reaction_type': "SAD"},
+                                 {'comment_id': 2, 'reaction_type': "WOW"}]
 
         post_storage_object = PostStorageImpl()
-        comment_reactions = post_storage_object.get_comment_wise_reactions(all_comment_reactions)
+        comment_reactions = post_storage_object.get_comment_wise_reactions(
+            all_comment_reactions)
 
         comment_one_reactions = comment_reactions[1]
         assert comment_one_reactions['count'] == 2
@@ -195,19 +231,30 @@ class TestGetPost:
     def test_get_comment_dto_list(self):
 
         comments_of_post = [
-            {'id': 1, 'commented_on': None, 'user': 1, 'user__username': 'user_1', 'user__profile_pic_url': 'https://user1.png', 'comment_text': 'This is comment one', 'commented_time': datetime.now()},
-            {'id': 2, 'commented_on': None, 'user': 1, 'user__username': 'user_1', 'user__profile_pic_url': 'https://user1.png', 'comment_text': 'This is comment two', 'commented_time': datetime.now()},
+            {'id': 1, 'commented_on': None, 'user': 1, 'user__username': 'user_1',
+             'user__profile_pic_url': 'https://user1.png', 'comment_text':
+                 'This is comment one', 'commented_time': datetime.now()},
+            {'id': 2, 'commented_on': None, 'user': 1, 'user__username': 'user_1',
+             'user__profile_pic_url': 'https://user1.png', 'comment_text':
+                 'This is comment two', 'commented_time': datetime.now()},
         ]
 
         comment_replies = {
-            1: [{'id': 3, 'commented_on': 1, 'user': 2, 'user__username': 'user_2', 'user__profile_pic_url': 'https://user2.png', 'comment_text': 'This is reply one', 'commented_time': datetime.now()}],
-            2: [{'id': 4, 'commented_on': 2, 'user': 1, 'user__username': 'user_1', 'user__profile_pic_url': 'https://user1.png', 'comment_text': 'This is reply two', 'commented_time': datetime.now()}],
+            1: [{'id': 3, 'commented_on': 1, 'user': 2, 'user__username': 'user_2',
+                 'user__profile_pic_url': 'https://user2.png', 'comment_text':
+                     'This is reply one', 'commented_time': datetime.now()}],
+            2: [{'id': 4, 'commented_on': 2, 'user': 1, 'user__username': 'user_1',
+                 'user__profile_pic_url': 'https://user1.png', 'comment_text':
+                     'This is reply two', 'commented_time': datetime.now()}],
         }
 
-        comment_reactions = {1: {'count': 3, 'type': ['WOW', 'SAD']}, 3: {'count': 1, 'type': ['HAHA']}}
+        comment_reactions = {1: {'count': 3, 'type': ['WOW', 'SAD']},
+                             3: {'count': 1, 'type': ['HAHA']}}
 
         post_storage_object = PostStorageImpl()
-        comments_dto = post_storage_object.convert_comments_dict_to_comment_dto_list(comments_of_post, comment_replies, comment_reactions)
+        comments_dto = post_storage_object\
+            .convert_comments_dict_to_comment_dto_list(
+            comments_of_post, comment_replies, comment_reactions)
 
         comment_ids = [comment.comment_id for comment in comments_dto]
 
@@ -223,11 +270,16 @@ class TestGetPost:
 
         assert comment_one_dto.user.user_id == comments_of_post[0]['user']
         assert comment_one_dto.user.name == comments_of_post[0]['user__username']
-        assert comment_one_dto.user.profile_pic_url == comments_of_post[0]['user__profile_pic_url']
-        assert comment_one_dto.comment_content == comments_of_post[0]['comment_text']
-        assert comment_one_dto.commented_at == comments_of_post[0]['commented_time']
-        assert comment_one_dto.comment_reactions.count == comment_reactions[1]['count']
-        assert comment_one_dto.comment_reactions.type == comment_reactions[1]['type']
+        assert comment_one_dto.user.profile_pic_url == \
+               comments_of_post[0]['user__profile_pic_url']
+        assert comment_one_dto.comment_content == \
+               comments_of_post[0]['comment_text']
+        assert comment_one_dto.commented_at == \
+               comments_of_post[0]['commented_time']
+        assert comment_one_dto.comment_reactions.count == \
+               comment_reactions[1]['count']
+        assert comment_one_dto.comment_reactions.type == \
+               comment_reactions[1]['type']
 
         comment_two_dto = None
         for comment in comments_dto:
@@ -237,7 +289,8 @@ class TestGetPost:
         assert comment_two_dto.comment_reactions.count == 0
         assert comment_two_dto.comment_reactions.type == []
 
-        reply_ids_of_comment_one = [reply.comment_id for reply in comment_one_dto.replies]
+        reply_ids_of_comment_one = [reply.comment_id for reply in
+                                    comment_one_dto.replies]
         
         assert 3 in reply_ids_of_comment_one
         assert 4 not in reply_ids_of_comment_one
@@ -248,12 +301,18 @@ class TestGetPost:
                 reply_three_dto = reply
 
         assert reply_three_dto.user.user_id == comment_replies[1][0]['user']
-        assert reply_three_dto.user.name == comment_replies[1][0]['user__username']
-        assert reply_three_dto.user.profile_pic_url == comment_replies[1][0]['user__profile_pic_url']
-        assert reply_three_dto.comment_content == comment_replies[1][0]['comment_text']
-        assert reply_three_dto.commented_at == comment_replies[1][0]['commented_time']
-        assert reply_three_dto.comment_reactions.count == comment_reactions[3]['count']
-        assert reply_three_dto.comment_reactions.type == comment_reactions[3]['type']
+        assert reply_three_dto.user.name == \
+               comment_replies[1][0]['user__username']
+        assert reply_three_dto.user.profile_pic_url == \
+               comment_replies[1][0]['user__profile_pic_url']
+        assert reply_three_dto.comment_content == \
+               comment_replies[1][0]['comment_text']
+        assert reply_three_dto.commented_at == \
+               comment_replies[1][0]['commented_time']
+        assert reply_three_dto.comment_reactions.count == \
+               comment_reactions[3]['count']
+        assert reply_three_dto.comment_reactions.type == \
+               comment_reactions[3]['type']
 
         reply_four_dto = None
         for reply in comment_two_dto.replies:

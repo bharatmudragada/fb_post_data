@@ -22,7 +22,8 @@ class TestDeletePost(unittest.TestCase):
         post_storage_mock.delete_post.return_value = response_data
         presenter_mock.get_delete_post_response.return_value = response_data
 
-        delete_post_interactor = DeletePostInteractor(post_storage_mock, presenter_mock)
+        delete_post_interactor = DeletePostInteractor(
+            post_storage_mock, presenter_mock)
         response = delete_post_interactor.delete_post(post_id)
 
         post_storage_mock.post_exists.assert_called_once_with(post_id)
@@ -38,9 +39,11 @@ class TestDeletePost(unittest.TestCase):
         post_id = 1
 
         post_storage_mock.post_exists.return_value = False
-        presenter_mock.raise_post_does_not_exist_exception.side_effect = BadRequest
+        presenter_mock.raise_post_does_not_exist_exception.side_effect\
+            = BadRequest
 
-        delete_post_interactor = DeletePostInteractor(post_storage_mock, presenter_mock)
+        delete_post_interactor = DeletePostInteractor(post_storage_mock,
+                                                      presenter_mock)
         with self.assertRaises(BadRequest):
             delete_post_interactor.delete_post(post_id)
 

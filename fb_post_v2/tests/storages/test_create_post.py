@@ -9,14 +9,16 @@ class TestCreatePost:
 
     @pytest.fixture
     def setup_data(self):
-        self.user_1 = User.objects.create(username="user_1", profile_pic_url="https://user_1")
+        self.user_1 = User.objects.create(username="user_1",
+                                          profile_pic_url="https://user_1")
 
     @pytest.mark.django_db
     @freeze_time("2019-08-18")
     def test_create_post_response(self, setup_data):
 
         post_storage_object = PostStorageImpl()
-        post_dto = post_storage_object.create_post("This is a testing post", self.user_1.id)
+        post_dto = post_storage_object.create_post("This is a testing post",
+                                                   self.user_1.id)
 
         post = Post.objects.get(pk=1)
 

@@ -12,7 +12,8 @@ class TestCreatePostResponse:
     @freeze_time("2019-08-18")
     def test_create_post_response(self):
 
-        post_dto = PostDTO(post_id=1, user_id=1, post_content="This is a post", created_time=datetime.now())
+        post_dto = PostDTO(post_id=1, user_id=1, post_content="This is a post",
+                           created_time=datetime.now())
 
         json_presenter = JsonPresenterImpl()
         response = json_presenter.get_create_post_response(post_dto)

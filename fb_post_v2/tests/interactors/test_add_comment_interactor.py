@@ -21,16 +21,23 @@ class TestAddCommentToPost(unittest.TestCase):
         comment_text = "This is comment"
         response_data = {"comment_id": comment_id}
 
-        comment_dto = CommentDTO(comment_id=comment_id, user_id=user_id, commented_at=datetime.now(), commented_on_id=commented_on_id, comment_content=comment_text)
+        comment_dto = CommentDTO(
+            comment_id=comment_id, user_id=user_id, commented_at=datetime.now(),
+            commented_on_id=commented_on_id, comment_content=comment_text)
         
         post_storage_mock.add_comment_to_post.return_value = comment_dto
-        presenter_mock.get_add_comment_to_post_response.return_value = response_data
+        presenter_mock.get_add_comment_to_post_response.return_value =\
+            response_data
 
-        add_comment_interactor = AddCommentInteractor(post_storage_mock, presenter_mock)
-        response = add_comment_interactor.add_comment_to_post(post_id, user_id, comment_text)
+        add_comment_interactor = AddCommentInteractor(
+            post_storage_mock, presenter_mock)
+        response = add_comment_interactor.add_comment_to_post(
+            post_id, user_id, comment_text)
 
-        post_storage_mock.add_comment_to_post.assert_called_once_with(post_id, user_id, comment_text)
-        presenter_mock.get_add_comment_to_post_response.assert_called_once_with(comment_dto)
+        post_storage_mock.add_comment_to_post.assert_called_once_with(
+            post_id, user_id, comment_text)
+        presenter_mock.get_add_comment_to_post_response.assert_called_once_with(
+            comment_dto)
         assert response == response_data
 
 
@@ -48,20 +55,30 @@ class TestAddReplyToComment(unittest.TestCase):
         commented_on_id = 1
         response_data = {"reply_id": reply_id}
 
-        comment_dto = CommentDTO(comment_id=reply_id, user_id=reply_user_id, commented_at=datetime.now(), commented_on_id=commented_on_id, comment_content=reply_text)
+        comment_dto = CommentDTO(
+            comment_id=reply_id, user_id=reply_user_id,
+            commented_at=datetime.now(), commented_on_id=commented_on_id,
+            comment_content=reply_text)
 
         post_storage_mock.is_reply.return_value = True
-        post_storage_mock.get_comment_id_for_reply.return_value = commented_on_id
+        post_storage_mock.get_comment_id_for_reply.return_value = \
+            commented_on_id
         post_storage_mock.add_reply_to_comment.return_value = comment_dto
-        presenter_mock.get_add_reply_to_comment_response.return_value = response_data
+        presenter_mock.get_add_reply_to_comment_response.return_value =\
+            response_data
 
-        add_comment_interactor = AddCommentInteractor(post_storage_mock, presenter_mock)
-        response = add_comment_interactor.add_reply_to_comment(comment_id, reply_user_id, reply_text)
+        add_comment_interactor = AddCommentInteractor(
+            post_storage_mock, presenter_mock)
+        response = add_comment_interactor.add_reply_to_comment(
+            comment_id, reply_user_id, reply_text)
 
         post_storage_mock.is_reply.assert_called_once_with(comment_id)
-        post_storage_mock.get_comment_id_for_reply.assert_called_once_with(comment_id)
-        post_storage_mock.add_reply_to_comment.assert_called_once_with(commented_on_id, reply_user_id, reply_text)
-        presenter_mock.get_add_reply_to_comment_response.assert_called_once_with(comment_dto)
+        post_storage_mock.get_comment_id_for_reply.assert_called_once_with(
+            comment_id)
+        post_storage_mock.add_reply_to_comment.assert_called_once_with(
+            commented_on_id, reply_user_id, reply_text)
+        presenter_mock.get_add_reply_to_comment_response\
+            .assert_called_once_with(comment_dto)
         assert response == response_data
 
     def test_reply_to_comment(self):
@@ -75,16 +92,24 @@ class TestAddReplyToComment(unittest.TestCase):
         reply_id = 4
         response_data = {"reply_id": reply_id}
 
-        comment_dto = CommentDTO(comment_id=reply_id, user_id=reply_user_id, commented_at=datetime.now(), commented_on_id=comment_id, comment_content=reply_text)
+        comment_dto = CommentDTO(
+            comment_id=reply_id, user_id=reply_user_id,
+            commented_at=datetime.now(), commented_on_id=comment_id,
+            comment_content=reply_text)
 
         post_storage_mock.is_reply.return_value = False
         post_storage_mock.add_reply_to_comment.return_value = comment_dto
-        presenter_mock.get_add_reply_to_comment_response.return_value = response_data
+        presenter_mock.get_add_reply_to_comment_response.return_value = \
+            response_data
 
-        add_comment_interactor = AddCommentInteractor(post_storage_mock, presenter_mock)
-        response = add_comment_interactor.add_reply_to_comment(comment_id, reply_user_id, reply_text)
+        add_comment_interactor = AddCommentInteractor(post_storage_mock,
+                                                      presenter_mock)
+        response = add_comment_interactor.add_reply_to_comment(
+            comment_id, reply_user_id, reply_text)
 
         post_storage_mock.is_reply.assert_called_once_with(comment_id)
-        post_storage_mock.add_reply_to_comment(comment_id, reply_user_id, reply_text)
-        presenter_mock.get_add_reply_to_comment_response.assert_called_once_with(comment_dto)
+        post_storage_mock.add_reply_to_comment(comment_id, reply_user_id,
+                                               reply_text)
+        presenter_mock.get_add_reply_to_comment_response\
+            .assert_called_once_with(comment_dto)
         assert response == response_data

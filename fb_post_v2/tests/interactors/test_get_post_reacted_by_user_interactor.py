@@ -17,11 +17,15 @@ class TestGetPostsReactedByUser(unittest.TestCase):
         response_data = {"post_ids": post_ids}
 
         post_storage_mock.get_user_reacted_posts.return_value = post_ids
-        presenter_mock.get_user_reacted_posts_response.return_value = response_data
+        presenter_mock.get_user_reacted_posts_response.return_value = \
+            response_data
 
-        get_reactions_to_post_interactor = GetUserReactedPostsInteractor(post_storage_mock, presenter_mock)
-        response = get_reactions_to_post_interactor.get_posts_reacted_by_user(user_id)
+        get_reactions_to_post_interactor = GetUserReactedPostsInteractor(
+            post_storage_mock, presenter_mock)
+        response = get_reactions_to_post_interactor.get_posts_reacted_by_user(
+            user_id)
 
         post_storage_mock.get_user_reacted_posts.assert_called_once_with(user_id)
-        presenter_mock.get_user_reacted_posts_response.assert_called_once_with(post_ids)
+        presenter_mock.get_user_reacted_posts_response.assert_called_once_with(
+            post_ids)
         assert response == response_data

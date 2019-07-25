@@ -19,7 +19,8 @@ class TestGetPostInteractor(unittest.TestCase):
         post_storage_mock.get_post.return_value = get_post_dto
         presenter_mock.get_post_response.return_value = response_data
 
-        get_post_interactor = GetPostInteractor(post_storage_mock, presenter_mock)
+        get_post_interactor = GetPostInteractor(post_storage_mock,
+                                                presenter_mock)
         response = get_post_interactor.get_post(post_id)
 
         post_storage_mock.get_post.assert_called_once_with(post_id)

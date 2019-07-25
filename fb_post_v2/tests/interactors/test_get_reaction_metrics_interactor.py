@@ -16,12 +16,16 @@ class TestGetReactionMetrics(unittest.TestCase):
         response_data = [{"reaction_type": "LOVE", "count": 3}]
 
         reaction_metrics_dto = [ReactionMetricDTO(reaction_type="LOVE", count=3)]
-        post_storage_mock.get_reaction_metrics.return_value = reaction_metrics_dto
-        presenter_mock.get_reaction_metrics_response.return_value = response_data
+        post_storage_mock.get_reaction_metrics.return_value =\
+            reaction_metrics_dto
+        presenter_mock.get_reaction_metrics_response.return_value = \
+            response_data
 
-        get_reaction_metric_interactor = GetReactionMetricsInteractor(post_storage_mock, presenter_mock)
+        get_reaction_metric_interactor = GetReactionMetricsInteractor(
+            post_storage_mock, presenter_mock)
         response = get_reaction_metric_interactor.get_reaction_metrics(post_id)
 
         post_storage_mock.get_reaction_metrics.assert_called_once_with(post_id)
-        presenter_mock.get_reaction_metrics_response.assert_called_once_with(reaction_metrics_dto)
+        presenter_mock.get_reaction_metrics_response.assert_called_once_with(
+            reaction_metrics_dto)
         assert response == response_data

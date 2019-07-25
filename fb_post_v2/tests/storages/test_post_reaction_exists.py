@@ -16,9 +16,11 @@ class TestPostReactionExists(unittest.TestCase):
         post_reaction_mock.objects.get.side_effect = ObjectDoesNotExist
 
         post_storage_object = PostStorageImpl()
-        response = post_storage_object.post_reaction_exists(user_id=1, post_id=1)
+        response = post_storage_object.post_reaction_exists(
+            user_id=1, post_id=1)
 
-        post_reaction_mock.objects.get.assert_called_once_with(user_id=1, post_id=1)
+        post_reaction_mock.objects.get.assert_called_once_with(
+            user_id=1, post_id=1)
         assert response == False
 
     @patch('fb_post_v2.storages.post_storage.PostReactions')
@@ -28,7 +30,9 @@ class TestPostReactionExists(unittest.TestCase):
         post_reaction_mock.objects.get.return_value = post_reaction
 
         post_storage_object = PostStorageImpl()
-        response = post_storage_object.post_reaction_exists(user_id=1, post_id=1)
+        response = post_storage_object.post_reaction_exists(
+            user_id=1, post_id=1)
 
-        post_reaction_mock.objects.get.assert_called_once_with(user_id=1, post_id=1)
+        post_reaction_mock.objects.get.assert_called_once_with(
+            user_id=1, post_id=1)
         assert response == True

@@ -9,7 +9,8 @@ class TestReactToPostResponse:
     @freeze_time("2019-08-18")
     def test_react_to_post_response(self):
 
-        post_reaction_dto = PostReactionDTO(reaction_id=1, user_id=1, reaction_type="LOVE", post_id=1)
+        post_reaction_dto = PostReactionDTO(
+            reaction_id=1, user_id=1, reaction_type="LOVE", post_id=1)
 
         json_presenter = JsonPresenterImpl()
         response = json_presenter.get_react_to_post_response(post_reaction_dto)

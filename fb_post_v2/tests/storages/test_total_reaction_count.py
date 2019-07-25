@@ -9,11 +9,16 @@ class TestTotalReactionCount:
 
     @pytest.fixture
     def setup_data(self):
-        self.user_1 = User.objects.create(username="user_1", profile_pic_url="https://user_1")
-        self.user_2 = User.objects.create(username="user_2", profile_pic_url="https://user_2")
-        self.post = Post.objects.create(user=self.user_1, post_content="This is new post")
-        self.post_reaction_1 = PostReactions.objects.create(post=self.post, user=self.user_1, reaction_type="LOVE")
-        self.post_reaction_2 = PostReactions.objects.create(post=self.post, user=self.user_2, reaction_type="SAD")
+        self.user_1 = User.objects.create(
+            username="user_1", profile_pic_url="https://user_1")
+        self.user_2 = User.objects.create(
+            username="user_2", profile_pic_url="https://user_2")
+        self.post = Post.objects.create(
+            user=self.user_1, post_content="This is new post")
+        self.post_reaction_1 = PostReactions.objects.create(
+            post=self.post, user=self.user_1, reaction_type="LOVE")
+        self.post_reaction_2 = PostReactions.objects.create(
+            post=self.post, user=self.user_2, reaction_type="SAD")
 
     @pytest.mark.django_db
     @freeze_time("2019-08-18")

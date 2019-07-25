@@ -8,6 +8,7 @@ class TestGetPositivePostsResponse:
         post_ids = [1, 2, 3]
 
         json_presenter = JsonPresenterImpl()
-        response = json_presenter.get_posts_with_more_positive_reactions_response(post_ids)
+        response = json_presenter\
+            .get_posts_with_more_positive_reactions_response(post_ids)
 
         assert response["post_ids"] == post_ids

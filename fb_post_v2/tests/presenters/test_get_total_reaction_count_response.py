@@ -8,6 +8,7 @@ class TestTotalReactionCountResponse:
         total_reactions_count = 5
 
         json_presenter = JsonPresenterImpl()
-        response = json_presenter.get_total_reaction_count_response(total_reactions_count)
+        response = json_presenter.get_total_reaction_count_response(
+            total_reactions_count)
 
         assert response["count"] == total_reactions_count

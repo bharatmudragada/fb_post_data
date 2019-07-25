@@ -9,10 +9,12 @@ class TestReactToCommentResponse:
     @freeze_time("2019-08-18")
     def test_react_to_comment_response(self):
 
-        comment_reaction_dto = CommentReactionDTO(reaction_id=1, user_id=1, reaction_type="LOVE", comment_id=1)
+        comment_reaction_dto = CommentReactionDTO(
+            reaction_id=1, user_id=1, reaction_type="LOVE", comment_id=1)
 
         json_presenter = JsonPresenterImpl()
-        response = json_presenter.get_react_to_comment_response(comment_reaction_dto)
+        response = json_presenter.get_react_to_comment_response(
+            comment_reaction_dto)
 
         assert response["reaction_id"] == comment_reaction_dto.reaction_id
 
@@ -22,6 +24,7 @@ class TestReactToCommentResponse:
         comment_reaction_dto = None
 
         json_presenter = JsonPresenterImpl()
-        response = json_presenter.get_react_to_comment_response(comment_reaction_dto)
+        response = json_presenter.get_react_to_comment_response(
+            comment_reaction_dto)
 
         assert response["status"] == "Reaction Deleted"

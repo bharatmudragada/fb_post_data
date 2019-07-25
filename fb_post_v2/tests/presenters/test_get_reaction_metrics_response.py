@@ -7,12 +7,16 @@ class TestGetReactionsMetricResponse:
 
     def test_get_reaction_metrics_response(self):
 
-        love_reaction_metric_dto = ReactionMetricDTO(reaction_type="LOVE", count=2)
-        haha_reaction_metric_dto = ReactionMetricDTO(reaction_type="HAHA", count=3)
-        reaction_metrics_dto = [love_reaction_metric_dto, haha_reaction_metric_dto]
+        love_reaction_metric_dto = ReactionMetricDTO(
+            reaction_type="LOVE", count=2)
+        haha_reaction_metric_dto = ReactionMetricDTO(
+            reaction_type="HAHA", count=3)
+        reaction_metrics_dto = [love_reaction_metric_dto,
+                                haha_reaction_metric_dto]
 
         json_presenter = JsonPresenterImpl()
-        response = json_presenter.get_reaction_metrics_response(reaction_metrics_dto)
+        response = json_presenter.get_reaction_metrics_response(
+            reaction_metrics_dto)
 
         love_reaction_metric = None
         for reaction_metric in response:

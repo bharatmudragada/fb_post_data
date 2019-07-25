@@ -11,7 +11,9 @@ class TestAddReplyToCommentResponse:
     @freeze_time("2019-08-18")
     def test_add_reply_to_comment(self):
 
-        comment_dto = CommentDTO(comment_id=2, user_id=1, commented_at=datetime.now(), comment_content="This is a reply", commented_on_id=1)
+        comment_dto = CommentDTO(
+            comment_id=2, user_id=1, commented_at=datetime.now(),
+            comment_content="This is a reply", commented_on_id=1)
 
         json_presenter = JsonPresenterImpl()
         response = json_presenter.get_add_reply_to_comment_response(comment_dto)
