@@ -16,4 +16,4 @@ class DeletePostInteractor:
             response = self.presenter.get_delete_post_response()
             return response
 
-        return self.presenter.raise_post_does_not_exist_exception()
+        self.presenter.raise_post_does_not_exist_exception()

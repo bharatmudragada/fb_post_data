@@ -14,7 +14,7 @@ class User(AbstractUser):
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    postBody = models.CharField(max_length=200)
+    post_body = models.CharField(max_length=200)
     postedTime = models.DateTimeField(auto_now=True)
 
     def __str__(self):

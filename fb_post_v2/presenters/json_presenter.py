@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional
 
 from django_swagger_utils.drf_server.exceptions import BadRequest
@@ -287,5 +288,5 @@ class JsonPresenterImpl(JsonPresenter):
         return response
 
     def raise_post_does_not_exist_exception(self):
-        raise BadRequest(message='Invalid post id',
-                         res_status='INVALID_POST_ID')
+        from django.core.exceptions import ObjectDoesNotExist
+        raise ObjectDoesNotExist()
