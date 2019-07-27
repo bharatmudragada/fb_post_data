@@ -64,6 +64,6 @@ class CommentReactions(models.Model):
 class Person(models.Model):
     firstname = models.CharField(max_length=30)
     lastname = models.CharField(max_length=30)
-    name = models.CharField(max_length=60)
+    username = models.CharField(max_length=60)
     uuid = models.UUIDField(unique=True)
 
