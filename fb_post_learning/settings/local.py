@@ -106,4 +106,6 @@ LOGGING['handlers'] = {
     }
 }
 
-AUTH_USER_MODEL = "fb_post_v2.User"
+AUTH_USER_MODEL = "fb_post.User"
+
+

@@ -65,7 +65,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 RAVEN_CONFIG = {
     'dsn': os.environ.get("RAVEN_DSN"),
@@ -307,6 +307,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # save from clickjack attack ref https://docs.djangoproject.com/en/1.9/ref/clickjacking/
     'django.middleware.locale.LocaleMiddleware',
+    'fb_post_v2.middlewares.update_status_code_middleware.UpdateStatusCodeMiddleware',
 ]
 
 ### api log config

@@ -4,6 +4,9 @@ from typing import List, Optional
 from django_swagger_utils.drf_server.exceptions import BadRequest
 import datetime
 
+from ib_common.date_time_utils.convert_datetime_to_local_string import \
+    convert_datetime_to_local_string
+
 from fb_post_v2.interactors.presenters.json_presenter import JsonPresenter
 from fb_post_v2.interactors.storages.post_storage import RepliesDTO, \
     ReactionMetricDTO, \
@@ -22,7 +25,8 @@ class JsonPresenterImpl(JsonPresenter):
 
     @staticmethod
     def get_formatted_date(datetime_object: datetime):
-        return datetime_object.strftime('%y-%m-%d %H:%M:%S.%f')
+        return convert_datetime_to_local_string(datetime_object,
+                                                '%y-%m-%d %H:%M:%S.%f')
 
     @staticmethod
     def get_user_wise_user_dict(users_dto_list: List[UserDTO]):
